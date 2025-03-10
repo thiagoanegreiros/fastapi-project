@@ -1,7 +1,7 @@
-# Criar um ambiente virtual (Linux/macOS)
+# Create an Environment
 python3 -m venv venv
 
-# Ativar o ambiente virtual no Linux/macOS
+# Activate Environment
 source venv/bin/activate
 
 # Install dependencies
