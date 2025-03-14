@@ -1,7 +1,9 @@
-from core.domain.user_repository_interface import IUserRepository
-from core.domain.user import User
-from typing import List
 import uuid
+from typing import List
+
+from core.domain.user import User
+from core.domain.user_repository_interface import IUserRepository
+
 
 class UserRepository(IUserRepository):
     """Implementação concreta do UserRepository"""

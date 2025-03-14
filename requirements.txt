@@ -5,3 +5,4 @@ sqlalchemy
 dependency-injector
 uuid
 pytest
+ruff

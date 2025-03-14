@@ -26,6 +26,24 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             }
+        },
+        {
+            "name": "Ruff - Check",
+            "type": "python",
+            "request": "launch",
+            "module": "ruff",
+            "args": ["check", "."],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Ruff - Format and Fix",
+            "type": "program",
+            "request": "launch",
+            "preLaunchTask": "Ruff - Format & Fix",
+            "program": "/bin/bash",
+            "args": ["-c", "echo 'Ruff Format & Fix Completed'"],
+            "console": "integratedTerminal"
         }
     ]
 }

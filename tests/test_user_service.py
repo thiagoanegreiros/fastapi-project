@@ -1,10 +1,11 @@
 import unittest
 from unittest.mock import MagicMock
+
 from core.application.user_service import UserService
 from core.domain.user import User
 
-class TestUserService(unittest.TestCase):
 
+class TestUserService(unittest.TestCase):
     def setUp(self):
         """Set up the test with a mock repository"""
         self.mock_repo = MagicMock()
@@ -30,8 +31,9 @@ class TestUserService(unittest.TestCase):
 
         result = self.user_service.list_users()
 
-        self.mock_repo.find_all.assert_called_once() 
+        self.mock_repo.find_all.assert_called_once()
         self.assertEqual(result, users)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,6 +1,8 @@
-from core.domain.user_repository_interface import IUserRepository
-from core.domain.user import User
 from typing import List
+
+from core.domain.user import User
+from core.domain.user_repository_interface import IUserRepository
+
 
 class UserService:
     """Serviço de Usuário desacoplado de repositórios específicos"""

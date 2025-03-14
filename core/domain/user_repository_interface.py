@@ -1,6 +1,7 @@
-from typing import Protocol
+from typing import List, Protocol
+
 from core.domain.user import User
-from typing import List
+
 
 class IUserRepository(Protocol):
     """Interface para repositórios de usuário"""
