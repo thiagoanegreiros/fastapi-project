@@ -20,4 +20,4 @@ async def favicon():
 
 @app.get("/")
 def read_root():
-    return {"message": "API com Arquitetura Hexagonal!"}
+    return {"message": "API com Arquitetura Hexagonal! "}
