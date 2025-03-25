@@ -14,6 +14,7 @@ router = APIRouter(prefix="/users", tags=["users"])
 def create_user(
     user: User, service: UserService = Depends(Provide[Container.user_service])
 ):
+    del user.id
     return service.create_user(user)
 
 
@@ -25,7 +26,8 @@ def list_users(service: UserService = Depends(Provide[Container.user_service])):
 @router.delete("/{user_id}")
 @inject
 def delete_user(user_id: str, service: UserService = Depends(Provide[Container.user_service])):
-    return service.delete_user(user_id)
+    if(service.delete_user(user_id) is False):
+       raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
 @router.get("/{user_id}")
 @inject
