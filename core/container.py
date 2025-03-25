@@ -9,7 +9,7 @@ class Container(containers.DeclarativeContainer):
 
     wiring_config = containers.WiringConfiguration(
         modules=["api.routes.user_router"]
-    )  # Auto-wiring nas rotas
+    )
 
     user_repository = providers.Singleton(UserRepository)
     user_service = providers.Singleton(UserService, user_repository)

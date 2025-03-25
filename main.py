@@ -9,7 +9,7 @@ app = FastAPI()
 
 container = Container()
 container.init_resources()
-app.container = container  # Adiciona o container ao FastAPI
+app.container = container
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(user_router.router)

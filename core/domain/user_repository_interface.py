@@ -1,4 +1,4 @@
-from typing import List, Protocol
+from typing import List, Optional, Protocol
 
 from core.domain.user import User
 
@@ -7,9 +7,13 @@ class IUserRepository(Protocol):
     """Interface para repositórios de usuário"""
 
     def save(self, user: User) -> User:
-        """Salva um usuário no banco"""
         ...
 
     def find_all(self) -> List[User]:
-        """Retorna todos os usuários"""
         ...
+
+    def delete(self, id: str) -> None:
+        ...
+
+    def get(self, id: str) -> Optional[User]:
+        ...        
