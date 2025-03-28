@@ -15,24 +15,24 @@ def create_user(
     user: User, service: UserService = Depends(Provide[Container.user_service])
 ):
     del user.id
-    return service.create_user(user)
+    return service.save(user)
 
 
 @router.get("/")
 @inject
 def list_users(service: UserService = Depends(Provide[Container.user_service])):
-    return service.list_users()
+    return service.find_all()
 
 @router.delete("/{user_id}")
 @inject
 def delete_user(user_id: str, service: UserService = Depends(Provide[Container.user_service])):
-    if(service.delete_user(user_id) is False):
+    if(service.delete(user_id) is False):
        raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
 @router.get("/{user_id}")
 @inject
 def get_user(user_id: str, service: UserService = Depends(Provide[Container.user_service])):
-    user = service.get_user(user_id)
+    user = service.get(user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     return user

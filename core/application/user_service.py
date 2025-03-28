@@ -11,14 +11,14 @@ class UserService:
     def __init__(self, user_repository: IUserRepository):
         self.user_repository = user_repository
 
-    def create_user(self, user: User) -> User:
+    def save(self, user: User) -> User:
         return self.user_repository.save(user)
 
-    def list_users(self) -> List[User]:
+    def find_all(self) -> List[User]:
         return self.user_repository.find_all()
 
-    def delete_user(self, id: str) -> None:
+    def delete(self, id: str) -> bool:
         return self.user_repository.delete(id)
 
-    def get_user(self, id: str) -> Optional[User]:
+    def get(self, id: str) -> Optional[User]:
         return self.user_repository.get(id)

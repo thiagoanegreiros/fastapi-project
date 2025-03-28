@@ -1,3 +1,5 @@
+import os
+from sqlmodel import SQLModel
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -10,6 +12,14 @@ app = FastAPI()
 container = Container()
 container.init_resources()
 app.container = container
+
+# 🧱 Cria o banco se ele ainda não existir
+if not os.path.exists('db.sqlite3'):
+    print("📦 Criando banco de dados e tabelas...")
+    SQLModel.metadata.create_all(container.engine())
+    print("✅ Banco criado com sucesso!")
+else:
+    print("📁 Banco já existe, sem necessidade de criar.")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(user_router.router)

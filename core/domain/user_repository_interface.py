@@ -12,7 +12,7 @@ class IUserRepository(Protocol):
     def find_all(self) -> List[User]:
         ...
 
-    def delete(self, id: str) -> None:
+    def delete(self, id: str) -> bool:
         ...
 
     def get(self, id: str) -> Optional[User]:

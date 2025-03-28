@@ -22,19 +22,10 @@ class Container(containers.DeclarativeContainer):
         connect_args={"check_same_thread": False}
     )
 
-    # Recurso gerenciado para criar/fechar sessões SQLModel
     session = providers.Resource(
         lambda engine: Session(engine),
         engine
     )
-
-    if not os.path.exists(DB_PATH):
-        print("📦 Criando banco de dados e tabelas...")
-        engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-        SQLModel.metadata.create_all(engine)
-        print("✅ Banco criado com sucesso!")
-    else:
-        print("📁 Banco já existe, sem necessidade de criar.")
 
     user_repository = providers.Factory(UserRepository, session=session)
     user_service = providers.Factory(UserService, user_repository=user_repository)
