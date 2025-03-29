@@ -21,7 +21,9 @@
             "type": "python",
             "request": "launch",
             "module": "pytest",
-            "args": ["tests"],
+            "args": [
+                "tests"
+              ],
             "justMyCode": false,
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"

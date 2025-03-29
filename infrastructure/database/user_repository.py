@@ -23,9 +23,4 @@ class UserRepository(BaseRepository[UserDB], IUserRepository):
         return User.model_validate(saved)
 
     def delete(self, id: str) -> bool:
-        user_db = super().get(id)  # get da BaseRepository → retorna UserDB
-        if user_db:
-            self.session.delete(user_db)
-            self.session.commit()
-            return True
-        return False
+        return super().delete(id)
