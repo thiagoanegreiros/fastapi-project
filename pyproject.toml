@@ -14,7 +14,7 @@ source = ["api", "core", "infrastructure"]
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 92
+fail_under = 100
 exclude_lines = [
     "pragma: no cover",
     "\\.\\.\\.",

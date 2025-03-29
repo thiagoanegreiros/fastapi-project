@@ -1,9 +1,12 @@
 from typing import List
+
 from sqlmodel import Session
+
 from core.domain.user import User
 from core.domain.user_repository_interface import IUserRepository
-from infrastructure.database.models import UserDB
 from infrastructure.database.base_repository import BaseRepository
+from infrastructure.database.models import UserDB
+
 
 class UserRepository(BaseRepository[UserDB], IUserRepository):
     def __init__(self, session: Session):

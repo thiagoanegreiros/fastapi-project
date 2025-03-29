@@ -1,5 +1,6 @@
+from unittest.mock import MagicMock
+
 import pytest
-from unittest.mock import MagicMock, call
 from sqlmodel import Session
 
 from core.domain.user import User
@@ -20,7 +21,7 @@ def user_repository(mock_session):
 def test_get_user(user_repository, mock_session):
     user_id = "123"
     fake_user_db = UserDB(id=user_id, name="John Doe", email="john@example.com")
-    
+
     # Mockando retorno do get do SQLModel
     mock_session.get.return_value = fake_user_db
 
@@ -40,7 +41,7 @@ def test_get_user_not_found(user_repository, mock_session):
 def test_find_all_users(user_repository, mock_session):
     fake_users_db = [
         UserDB(id="1", name="Alice", email="alice@example.com"),
-        UserDB(id="2", name="Bob", email="bob@example.com")
+        UserDB(id="2", name="Bob", email="bob@example.com"),
     ]
 
     # Simulando a execução da query com exec().all()
@@ -58,7 +59,7 @@ def test_find_all_users(user_repository, mock_session):
 
 def test_save_user(user_repository, mock_session):
     user = User(id="1", name="Alice", email="alice@example.com")
-    user_db = UserDB(**user.model_dump())
+    UserDB(**user.model_dump())
 
     # Simular commit e refresh
     mock_session.refresh.side_effect = lambda x: None  # refresh não altera

@@ -1,4 +1,3 @@
-
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -23,15 +22,21 @@ def create_user(
 def list_users(service: UserService = Depends(Provide[Container.user_service])):
     return service.find_all()
 
+
 @router.delete("/{user_id}")
 @inject
-def delete_user(user_id: str, service: UserService = Depends(Provide[Container.user_service])):
-    if(service.delete(user_id) is False):
-       raise HTTPException(status_code=404, detail="Usuário não encontrado")
+def delete_user(
+    user_id: str, service: UserService = Depends(Provide[Container.user_service])
+):
+    if service.delete(user_id) is False:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
 
 @router.get("/{user_id}")
 @inject
-def get_user(user_id: str, service: UserService = Depends(Provide[Container.user_service])):
+def get_user(
+    user_id: str, service: UserService = Depends(Provide[Container.user_service])
+):
     user = service.get(user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")

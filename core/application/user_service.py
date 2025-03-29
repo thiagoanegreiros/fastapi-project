@@ -1,5 +1,4 @@
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
 from core.domain.user import User
 from core.domain.user_repository_interface import IUserRepository

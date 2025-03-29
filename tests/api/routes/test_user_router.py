@@ -1,12 +1,13 @@
-import pytest
 from unittest.mock import MagicMock
-from fastapi.testclient import TestClient
-from fastapi import FastAPI
 
-from core.domain.user import User
+import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+from api.routes import user_router
 from core.application.user_service import UserService
 from core.container import Container
-from api.routes import user_router
+from core.domain.user import User
 
 
 @pytest.fixture
