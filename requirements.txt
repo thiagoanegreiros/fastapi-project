@@ -8,3 +8,4 @@ pytest
 ruff
 sqlmodel
 pytest-cov
+httpx
