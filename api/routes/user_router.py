@@ -1,9 +1,10 @@
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from core.application.user_service import UserService
 from core.container import Container
 from core.domain.user import User
+from core.log_utils import log_with_request
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -11,9 +12,15 @@ router = APIRouter(prefix="/users", tags=["users"])
 @router.post("/")
 @inject
 def create_user(
-    user: User, service: UserService = Depends(Provide[Container.user_service])
+    request: Request,
+    user: User,
+    service: UserService = Depends(Provide[Container.user_service]),
 ):
     del user.id
+    log_with_request(
+        request, data={"event": "Usuário criado com sucesso", "user": "fulano"}
+    )
+
     return service.save(user)
 
 

@@ -8,6 +8,7 @@ from api.routes import user_router
 from core.application.user_service import UserService
 from core.container import Container
 from core.domain.user import User
+from core.log_utils import RequestLoggingMiddleware
 
 
 @pytest.fixture
@@ -23,6 +24,7 @@ def client(mock_user_service):
     container.wire(modules=[user_router])
 
     app = FastAPI()
+    app.add_middleware(RequestLoggingMiddleware)
     app.container = container
     app.include_router(user_router.router)
 

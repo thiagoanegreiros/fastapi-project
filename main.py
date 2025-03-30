@@ -7,6 +7,7 @@ from sqlmodel import SQLModel
 
 from api.routes import user_router
 from core.container import Container
+from core.log_utils import RequestLoggingMiddleware
 
 app = FastAPI()
 
@@ -24,6 +25,7 @@ else:
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(user_router.router)
+app.add_middleware(RequestLoggingMiddleware)
 
 
 @app.get("/favicon.ico", include_in_schema=False)
