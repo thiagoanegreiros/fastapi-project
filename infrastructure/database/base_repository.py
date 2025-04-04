@@ -1,7 +1,9 @@
-from typing import TypeVar, Generic, Type, List
+from typing import Generic, List, Type, TypeVar
+
 from sqlmodel import Session, select
 
 T = TypeVar("T")
+
 
 class BaseRepository(Generic[T]):
     def __init__(self, session: Session, model: Type[T]):

@@ -7,3 +7,6 @@ uuid
 pytest
 ruff
 sqlmodel
+pytest-cov
+httpx
+pre-commit

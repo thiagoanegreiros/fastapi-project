@@ -4,3 +4,23 @@ lint.extend-select = ["I"]  # Para organizar imports automaticamente
 
 [tool.mypy]
 strict = true
+
+[tool.pytest.ini_options]
+addopts = "--cov --cov-report=term-missing"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["api", "core", "infrastructure"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 100
+exclude_lines = [
+    "pragma: no cover",
+    "\\.\\.\\.",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+    "raise NotImplementedError",
+    "def __repr__",
+    "def __str__"
+]

@@ -1,9 +1,12 @@
 from typing import List
+
 from sqlmodel import Session
+
 from core.domain.user import User
 from core.domain.user_repository_interface import IUserRepository
-from infrastructure.database.models import UserDB
 from infrastructure.database.base_repository import BaseRepository
+from infrastructure.database.models import UserDB
+
 
 class UserRepository(BaseRepository[UserDB], IUserRepository):
     def __init__(self, session: Session):
@@ -23,9 +26,4 @@ class UserRepository(BaseRepository[UserDB], IUserRepository):
         return User.model_validate(saved)
 
     def delete(self, id: str) -> bool:
-        user_db = super().get(id)  # get da BaseRepository → retorna UserDB
-        if user_db:
-            self.session.delete(user_db)
-            self.session.commit()
-            return True
-        return False
+        return super().delete(id)
