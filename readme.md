@@ -3,6 +3,7 @@
 This project is a backend API built with **Python 3.12** and **FastAPI**, following the principles of **Hexagonal Architecture** (Ports & Adapters), with a focus on **testability, readability, observability, and extensibility**.
 
 It demonstrates **modern Python engineering practices**, including structured logging, 100% test coverage, and clean code separation.
+
 ---
 
 ## 🚀 Features
