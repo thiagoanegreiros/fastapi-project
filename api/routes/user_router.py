@@ -2,6 +2,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from core.application.user_service import UserService
+from core.auth import require_auth
 from core.container import Container
 from core.domain.user import User
 from core.logger.logger_middleware import log_with_request
@@ -9,7 +10,7 @@ from core.logger.logger_middleware import log_with_request
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.post("/")
+@router.post("/", dependencies=[Depends(require_auth)])
 @inject
 def create_user(
     request: Request,
@@ -24,13 +25,13 @@ def create_user(
     return service.save(user)
 
 
-@router.get("/")
+@router.get("/", dependencies=[Depends(require_auth)])
 @inject
 def list_users(service: UserService = Depends(Provide[Container.user_service])):
     return service.find_all()
 
 
-@router.delete("/{user_id}")
+@router.delete("/{user_id}", dependencies=[Depends(require_auth)])
 @inject
 def delete_user(
     user_id: str, service: UserService = Depends(Provide[Container.user_service])
@@ -39,7 +40,7 @@ def delete_user(
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
 
-@router.get("/{user_id}")
+@router.get("/{user_id}", dependencies=[Depends(require_auth)])
 @inject
 def get_user(
     user_id: str, service: UserService = Depends(Provide[Container.user_service])

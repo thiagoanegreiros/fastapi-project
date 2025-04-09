@@ -2,7 +2,7 @@ import datetime
 import json
 import logging
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from core.logger.request_context import request_id_ctx_var
 
@@ -18,7 +18,7 @@ class Logger:
     ):
         self.logger = logging.getLogger(name)
         self.logger.setLevel(getattr(logging, level.upper()))
-        self.logger.handlers = []
+        self.logger.handlers.clear()  # evita logs duplicados
 
         formatter = logging.Formatter(
             "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
@@ -30,11 +30,11 @@ class Logger:
             console_handler.setFormatter(formatter)
             self.logger.addHandler(console_handler)
 
-        # Arquivo com data no nome
+        # Logging em arquivo
         if log_file:
-            self._setup_file_logging(log_file, rotation_days, formatter)
+            self._setup_file_logging(log_file, rotation_days)
 
-    def _setup_file_logging(self, base_path: str, rotation_days: int, formatter):
+    def _setup_file_logging(self, base_path: str, rotation_days: int):
         today = datetime.datetime.now(datetime.UTC).strftime("%Y%m%d")
         base_path = Path(base_path)
         log_dir = base_path.parent
@@ -62,7 +62,11 @@ class Logger:
             file.unlink()
 
     def _log(
-        self, level: str, data: Union[str, dict], request_id: Optional[str] = None
+        self,
+        level: str,
+        data: Union[str, dict],
+        request_id: Optional[str] = None,
+        **kwargs: Any,
     ):
         current_request_id = request_id or request_id_ctx_var.get()
         if isinstance(data, dict):
@@ -72,7 +76,7 @@ class Logger:
             type_ = "Log"
             log_data = {"message": str(data)}
 
-        log = {
+        log_record = {
             "timestamp": datetime.datetime.now(datetime.UTC).isoformat() + "Z",
             "level": level.upper(),
             "request_id": current_request_id,
@@ -80,31 +84,33 @@ class Logger:
             "data": log_data,
         }
 
-        log_str = json.dumps(log)
+        log_str = json.dumps(log_record)
 
-        match level.upper():
-            case "DEBUG":
-                self.logger.debug(log_str)
-            case "INFO":
-                self.logger.info(log_str)
-            case "WARNING":
-                self.logger.warning(log_str)
-            case "ERROR":
-                self.logger.error(log_str)
-            case _:
-                self.logger.info(log_str)
+        if level.upper() == "DEBUG":
+            self.logger.debug(log_str, **kwargs)
+        elif level.upper() == "INFO":
+            self.logger.info(log_str, **kwargs)
+        elif level.upper() == "WARNING":
+            self.logger.warning(log_str, **kwargs)
+        elif level.upper() == "ERROR":
+            self.logger.error(log_str, **kwargs)
+        else:
+            self.logger.info(log_str, **kwargs)
 
-    def debug(self, data: Union[str, dict], request_id: Optional[str] = None):
-        self._log("DEBUG", data, request_id)
+    # Métodos públicos compatíveis com log padrão
+    def debug(self, data: Union[str, dict], request_id: Optional[str] = None, **kwargs):
+        self._log("DEBUG", data, request_id, **kwargs)
 
-    def info(self, data: Union[str, dict], request_id: Optional[str] = None):
-        self._log("INFO", data, request_id)
+    def info(self, data: Union[str, dict], request_id: Optional[str] = None, **kwargs):
+        self._log("INFO", data, request_id, **kwargs)
 
-    def warning(self, data: Union[str, dict], request_id: Optional[str] = None):
-        self._log("WARNING", data, request_id)
+    def warning(
+        self, data: Union[str, dict], request_id: Optional[str] = None, **kwargs
+    ):
+        self._log("WARNING", data, request_id, **kwargs)
 
-    def error(self, data: Union[str, dict], request_id: Optional[str] = None):
-        self._log("ERROR", data, request_id)
+    def error(self, data: Union[str, dict], request_id: Optional[str] = None, **kwargs):
+        self._log("ERROR", data, request_id, **kwargs)
 
     def get_logger(self):
         return self.logger

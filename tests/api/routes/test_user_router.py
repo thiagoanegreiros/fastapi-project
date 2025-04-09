@@ -1,10 +1,13 @@
+import os
 from unittest.mock import MagicMock
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from starlette.middleware.sessions import SessionMiddleware
 
 from api.routes import user_router
+from core.auth import require_auth
 from core.container import Container
 from core.domain.user import User
 from core.logger.logger import Logger
@@ -15,21 +18,26 @@ from core.logger.logger_middleware import RequestLoggingMiddleware
 def client_and_repo():
     container = Container()
 
-    # Mocks para repositório e logger
     mock_repo = MagicMock()
     mock_logger = MagicMock(spec=Logger)
 
     container.user_repository.override(mock_repo)
     container.logger.override(mock_logger)
-
     container.wire(modules=["api.routes.user_router", "core.logger.logger_middleware"])
 
     app = FastAPI()
+
+    secret_key = os.getenv("SECRET_KEY", "TEST_SECRET")
     app.add_middleware(RequestLoggingMiddleware)
+    app.add_middleware(SessionMiddleware, secret_key=secret_key)
+    app.dependency_overrides[require_auth] = lambda: {"email": "test@example.com"}
+
     app.container = container
     app.include_router(user_router.router)
 
-    return TestClient(app), mock_repo
+    client = TestClient(app, raise_server_exceptions=True)
+
+    return client, mock_repo
 
 
 def test_create_user(client_and_repo):

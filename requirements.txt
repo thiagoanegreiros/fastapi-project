@@ -12,3 +12,5 @@ httpx
 pre-commit
 python-dotenv
 pytest-asyncio
+authlib
+itsdangerous

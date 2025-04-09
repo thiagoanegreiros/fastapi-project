@@ -11,7 +11,7 @@ It demonstrates **modern Python engineering practices**, including structured lo
 - ✅ **FastAPI** with strong typing
 - ✅ Hexagonal Architecture (Domain → Application → Infrastructure)
 - ✅ **100% unit test coverage** with `pytest`
-- ✅ **Structured logging with Request ID and execution time**
+- ✅ Structured logging with Request ID and execution time
 - ✅ Centralized exception handling
 - ✅ Dependency injection using `dependency-injector`
 - ✅ Environment configuration with `.env`

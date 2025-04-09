@@ -1,12 +1,15 @@
 import os
 
+from authlib.integrations.starlette_client import OAuth
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse
+from fastapi.requests import Request
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import SQLModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.middleware.sessions import SessionMiddleware
 
 from api.routes import user_router
 from core.container import Container
@@ -34,6 +37,7 @@ container.config.logging.to_console.from_env("LOG_TO_CONSOLE", True)
 container.config.logging.rotation_days.from_env("ROTATION_DAYS", 5)
 container.config.logging.file.from_env("LOG_FILE", "logs/app.log")
 container.wire(modules=["core.logger.logger_middleware", "api.routes.user_router"])
+container.wire(modules=["core.logger.exception_handlers"])
 
 app.container = container
 
@@ -49,6 +53,16 @@ else:
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(user_router.router)
 app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
+
+oauth = OAuth()
+oauth.register(
+    name="google",
+    client_id=os.getenv("GOOGLE_CLIENT_ID"),
+    client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={"scope": "openid email profile"},
+)
 
 
 @app.get("/favicon.ico", include_in_schema=False)
@@ -59,3 +73,29 @@ async def favicon():
 @app.get("/")
 def read_root():
     return {"message": "Hexagonal Architecture API! "}
+
+
+@app.get("/login")
+async def login(request: Request):
+    redirect_uri = request.url_for("auth")
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+
+@app.get("/auth")
+async def auth(request: Request):
+    token = await oauth.google.authorize_access_token(request)
+
+    user_info = token["userinfo"]
+    print("✅ Usuário autenticado:", user_info)
+
+    request.session["user"] = dict(user_info)
+
+    return RedirectResponse(url="/me")
+
+
+@app.get("/me")
+async def me(request: Request):
+    user = request.session.get("user")
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    return user
