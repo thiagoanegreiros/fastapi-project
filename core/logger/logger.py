@@ -38,11 +38,10 @@ class Logger:
         today = datetime.datetime.now(datetime.UTC).strftime("%Y%m%d")
         base_path = Path(base_path)
         log_dir = base_path.parent
-        app_name = base_path.stem  # ex: "app" de "logs/app.log"
+        app_name = base_path.stem 
 
         log_dir.mkdir(parents=True, exist_ok=True)
 
-        # Nome final: logs/20250409-app.log
         dated_log_name = f"{today}-{app_name}.log"
         dated_log_path = log_dir / dated_log_name
 
@@ -51,7 +50,6 @@ class Logger:
         file_handler.setFormatter(json_formatter)
         self.logger.addHandler(file_handler)
 
-        # Limpa arquivos antigos
         self._cleanup_old_logs(log_dir, app_name, rotation_days)
 
     def _cleanup_old_logs(self, log_dir: Path, app_name: str, keep_days: int):
@@ -60,8 +58,7 @@ class Logger:
             key=lambda f: f.name,
         )
 
-        # Mantém apenas os N mais recentes
-        for file in logs[:-keep_days]:
+        for file in logs[:-int(keep_days)]:
             file.unlink()
 
     def _log(

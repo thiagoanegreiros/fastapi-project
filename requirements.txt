@@ -10,3 +10,4 @@ sqlmodel
 pytest-cov
 httpx
 pre-commit
+python-dotenv

@@ -53,21 +53,18 @@ def test_logger_formats_json_and_includes_request_id(log_dir):
 def test_logger_removes_old_logs(log_dir):
     rotation_days = 5
 
-    # Criar 6 arquivos antigos (1 extra além do rotation_days)
     for i in range(6):
         date = (
             datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=i + 1)
         ).strftime("%Y%m%d")
         (log_dir / f"{date}-app.log").write_text("old log")
 
-    # Isso criará o log de hoje (dia atual)
     Logger(
         log_file=str(log_dir / "app.log"),
         rotation_days=rotation_days,
         log_to_console=False,
     )
 
-    # Após a limpeza, deve restar só os 5 mais recentes (incluindo o de hoje)
     remaining_files = list(log_dir.glob("*-app.log"))
 
     assert len(remaining_files) == rotation_days

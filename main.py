@@ -1,5 +1,6 @@
 import os
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -8,6 +9,8 @@ from sqlmodel import SQLModel
 from api.routes import user_router
 from core.container import Container
 from core.logger.logger_middleware import RequestLoggingMiddleware
+
+load_dotenv()
 
 app = FastAPI()
 
