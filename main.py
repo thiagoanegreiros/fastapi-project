@@ -2,12 +2,19 @@ import os
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import SQLModel
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from api.routes import user_router
 from core.container import Container
+from core.logger.exception_handlers import (
+    global_exception_handler,
+    http_exception_handler,
+    validation_exception_handler,
+)
 from core.logger.logger_middleware import RequestLoggingMiddleware
 
 load_dotenv()
@@ -16,6 +23,10 @@ app = FastAPI()
 
 container = Container()
 container.init_resources()
+
+app.add_exception_handler(Exception, global_exception_handler)
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
 container.config.logging.app.from_env("APP_NAME", "FASTAPI")
 container.config.logging.level.from_env("LOG_LEVEL", "INFO")

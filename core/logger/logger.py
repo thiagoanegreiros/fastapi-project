@@ -38,7 +38,7 @@ class Logger:
         today = datetime.datetime.now(datetime.UTC).strftime("%Y%m%d")
         base_path = Path(base_path)
         log_dir = base_path.parent
-        app_name = base_path.stem 
+        app_name = base_path.stem
 
         log_dir.mkdir(parents=True, exist_ok=True)
 
@@ -58,7 +58,7 @@ class Logger:
             key=lambda f: f.name,
         )
 
-        for file in logs[:-int(keep_days)]:
+        for file in logs[: -int(keep_days)]:
             file.unlink()
 
     def _log(
