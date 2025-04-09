@@ -7,21 +7,30 @@ from sqlmodel import SQLModel
 
 from api.routes import user_router
 from core.container import Container
-from core.log_utils import RequestLoggingMiddleware
+from core.logger.logger_middleware import RequestLoggingMiddleware
 
 app = FastAPI()
 
 container = Container()
 container.init_resources()
+
+container.config.logging.app.from_env("APP_NAME", "FASTAPI")
+container.config.logging.level.from_env("LOG_LEVEL", "INFO")
+container.config.logging.to_console.from_env("LOG_TO_CONSOLE", True)
+container.config.logging.rotation_days.from_env("ROTATION_DAYS", 5)
+container.config.logging.file.from_env("LOG_FILE", "logs/app.log")
+container.wire(modules=["core.logger.logger_middleware", "api.routes.user_router"])
+
 app.container = container
 
-# 🧱 Cria o banco se ele ainda não existir
+logger = container.logger()
+
 if not os.path.exists("db.sqlite3"):
-    print("📦 Criando banco de dados e tabelas...")
+    logger.info("📦 Criando banco de dados e tabelas...")
     SQLModel.metadata.create_all(container.engine())
-    print("✅ Banco criado com sucesso!")
+    logger.info("✅ Banco criado com sucesso!")
 else:
-    print("📁 Banco já existe, sem necessidade de criar.")
+    logger.info("📁 Banco já existe, sem necessidade de criar.")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(user_router.router)

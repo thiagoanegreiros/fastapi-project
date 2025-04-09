@@ -18,4 +18,4 @@ repos:
         entry: ./scripts/pre_push_check.sh
         language: system
         types: [python]
-        stages: [push]
+        stages: [pre-push]

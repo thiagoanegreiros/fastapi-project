@@ -8,7 +8,7 @@ from api.routes import user_router
 from core.application.user_service import UserService
 from core.container import Container
 from core.domain.user import User
-from core.log_utils import RequestLoggingMiddleware
+from core.logger.logger_middleware import RequestLoggingMiddleware
 
 
 @pytest.fixture

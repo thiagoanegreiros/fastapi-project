@@ -2,6 +2,7 @@ from dependency_injector import containers, providers
 from sqlmodel import Session, create_engine
 
 from core.application.user_service import UserService
+from core.logger.logger import Logger
 from infrastructure.database.user_repository import UserRepository
 
 DB_PATH = "db.sqlite3"
@@ -20,5 +21,18 @@ class Container(containers.DeclarativeContainer):
 
     session = providers.Resource(lambda engine: Session(engine), engine)
 
+    config = providers.Configuration()
+
+    logger = providers.Singleton(
+        Logger,
+        name=config.logging.app,
+        level=config.logging.level,
+        rotation_days=config.logging.rotation_days,
+        log_to_console=config.logging.to_console,
+        log_file=config.logging.file,
+    )
+
     user_repository = providers.Factory(UserRepository, session=session)
-    user_service = providers.Factory(UserService, user_repository=user_repository)
+    user_service = providers.Factory(
+        UserService, user_repository=user_repository, logger=logger
+    )

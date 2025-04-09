@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from core.application.user_service import UserService
 from core.container import Container
 from core.domain.user import User
-from core.log_utils import log_with_request
+from core.logger.logger_middleware import log_with_request
 
 router = APIRouter(prefix="/users", tags=["users"])
 
