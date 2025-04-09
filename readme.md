@@ -16,6 +16,8 @@ It demonstrates **modern Python engineering practices**, including structured lo
 - ✅ Dependency injection using `dependency-injector`
 - ✅ Environment configuration with `.env`
 - ✅ Ready for CI/CD with `pre-commit`, `ruff`, and `coverage`
+- ✅ Google OAuth2 login with session-based authentication
+
 
 ---
 
