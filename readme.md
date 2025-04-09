@@ -6,7 +6,7 @@ It demonstrates **modern Python engineering practices**, including structured lo
 
 ---
 
-## 🚀 Features
+## 🚀 Features 
 
 - ✅ **FastAPI** with strong typing
 - ✅ Hexagonal Architecture (Domain → Application → Infrastructure)
