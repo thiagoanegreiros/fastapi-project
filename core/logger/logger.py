@@ -1,7 +1,6 @@
 import datetime
 import json
 import logging
-from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 from typing import Optional, Union
 
@@ -25,23 +24,45 @@ class Logger:
             "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
         )
 
+        # Terminal logging
         if log_to_console and not log_file:
             console_handler = logging.StreamHandler()
             console_handler.setFormatter(formatter)
             self.logger.addHandler(console_handler)
 
+        # Arquivo com data no nome
         if log_file:
-            log_path = Path(log_file).parent
-            log_path.mkdir(parents=True, exist_ok=True)
+            self._setup_file_logging(log_file, rotation_days, formatter)
 
-            file_handler = TimedRotatingFileHandler(
-                filename=log_file,
-                when="midnight",
-                backupCount=rotation_days,
-                encoding="utf-8",
-            )
-            file_handler.setFormatter(formatter)
-            self.logger.addHandler(file_handler)
+    def _setup_file_logging(self, base_path: str, rotation_days: int, formatter):
+        today = datetime.datetime.now(datetime.UTC).strftime("%Y%m%d")
+        base_path = Path(base_path)
+        log_dir = base_path.parent
+        app_name = base_path.stem  # ex: "app" de "logs/app.log"
+
+        log_dir.mkdir(parents=True, exist_ok=True)
+
+        # Nome final: logs/20250409-app.log
+        dated_log_name = f"{today}-{app_name}.log"
+        dated_log_path = log_dir / dated_log_name
+
+        file_handler = logging.FileHandler(dated_log_path, encoding="utf-8")
+        json_formatter = logging.Formatter("%(message)s")
+        file_handler.setFormatter(json_formatter)
+        self.logger.addHandler(file_handler)
+
+        # Limpa arquivos antigos
+        self._cleanup_old_logs(log_dir, app_name, rotation_days)
+
+    def _cleanup_old_logs(self, log_dir: Path, app_name: str, keep_days: int):
+        logs = sorted(
+            [f for f in log_dir.glob(f"*-{app_name}.log") if f.name[:8].isdigit()],
+            key=lambda f: f.name,
+        )
+
+        # Mantém apenas os N mais recentes
+        for file in logs[:-keep_days]:
+            file.unlink()
 
     def _log(
         self, level: str, data: Union[str, dict], request_id: Optional[str] = None
@@ -55,7 +76,7 @@ class Logger:
             log_data = {"message": str(data)}
 
         log = {
-            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.datetime.now(datetime.UTC).isoformat() + "Z",
             "level": level.upper(),
             "request_id": current_request_id,
             "type": type_,

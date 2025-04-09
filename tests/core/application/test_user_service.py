@@ -9,7 +9,8 @@ class TestUserService(unittest.TestCase):
     def setUp(self):
         """Set up the test with a mock repository"""
         self.mock_repo = MagicMock()
-        self.user_service = UserService(self.mock_repo)
+        self.mock_logger = MagicMock()
+        self.user_service = UserService(self.mock_repo, self.mock_logger)
 
     def test_create_user(self):
         """Test that `create_user` calls `save` correctly"""

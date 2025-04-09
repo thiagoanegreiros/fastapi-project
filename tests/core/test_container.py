@@ -13,6 +13,12 @@ def test_container(tmp_path):
     test_db_url = f"sqlite:///{db_path}"
 
     container = Container()
+
+    container.config.logging.level.from_value("DEBUG")
+    container.config.logging.to_console.from_value(False)
+    container.config.logging.rotation_days.from_value(1)
+    container.config.logging.file.from_value(None)
+
     container.override_providers(
         engine=container.engine.override(
             lambda: Container.engine.provider_cls(
