@@ -1,7 +1,7 @@
 # 🐍 FastAPI Hexagonal App
 
-![CI](https://github.com/thiagoananias/meu-projeto/actions/workflows/ci.yml/badge.svg)
-![CodeQL](https://github.com/thiagoanegreiros/fastapi-pr/actions/workflows/codeql.yml/badge.svg)
+![CI](hhttps://github.com/thiagoanegreiros/fastapi-project/actions/workflows/ci.yml/badge.svg)
+![CodeQL](https://github.com/thiagoanegreiros/fastapi-project/actions/workflows/codeql.yml/badge.svg)
 
 This project is a backend API built with **Python 3.12** and **FastAPI**, following the principles of **Hexagonal Architecture** (Ports & Adapters), with a focus on **testability, readability, observability, and extensibility**.
 
