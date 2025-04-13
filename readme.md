@@ -3,6 +3,9 @@
 ![CI](https://github.com/thiagoanegreiros/fastapi-project/actions/workflows/ci.yml/badge.svg)
 ![CodeQL](https://github.com/thiagoanegreiros/fastapi-project/actions/workflows/codeql.yml/badge.svg)
 [![Codecov](https://codecov.io/gh/thiagoanegreiros/fastapi-project/branch/main/graph/badge.svg)](https://codecov.io/gh/thiagoanegreiros/fastapi-project)
+![Python](https://img.shields.io/badge/python-3.12-blue.svg)
+![License](https://img.shields.io/github/license/thiagoanegreiros/fastapi-project)
+![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen.svg)
 
 This project is a backend API built with **Python 3.12** and **FastAPI**, following the principles of **Hexagonal Architecture** (Ports & Adapters), with a focus on **testability, readability, observability, and extensibility**.
 
