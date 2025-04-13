@@ -77,7 +77,7 @@ def read_root():
 
 @app.get("/login")
 async def login(request: Request):
-    redirect_uri = request.url_for("auth")
+    redirect_uri = os.getenv("REDIRECT_URI")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
