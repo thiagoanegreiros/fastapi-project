@@ -25,13 +25,13 @@ class Logger:
         )
 
         # Terminal logging
-        if log_to_console and not log_file:
+        if log_to_console:
             console_handler = logging.StreamHandler()
             console_handler.setFormatter(formatter)
             self.logger.addHandler(console_handler)
 
         # Logging em arquivo
-        if log_file:
+        if log_file and not log_to_console:
             self._setup_file_logging(log_file, rotation_days)
 
     def _setup_file_logging(self, base_path: str, rotation_days: int):
