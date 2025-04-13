@@ -5,10 +5,14 @@ on:
     branches:
       - main
   pull_request:
+env:
+  PYTHONPATH: ${{ github.workspace }}
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}
 
     steps:
       - name: Checkout code
