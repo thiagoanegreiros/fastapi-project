@@ -1,8 +1,10 @@
 from dependency_injector import containers, providers
 from sqlmodel import Session, create_engine
 
+from core.application.todo_service import TodoService
 from core.application.user_service import UserService
 from core.logger.logger import Logger
+from infrastructure.api.todo_api_client import TodoApiClient
 from infrastructure.database.user_repository import UserRepository
 
 DB_PATH = "db.sqlite3"
@@ -13,6 +15,7 @@ class Container(containers.DeclarativeContainer):
     """Container de injeção de dependência"""
 
     wiring_config = containers.WiringConfiguration(modules=["api.routes.user_router"])
+    wiring_config = containers.WiringConfiguration(modules=["api.routes.todo_router"])
 
     # Cria o engine como singleton (não copia)
     engine = providers.Singleton(
@@ -36,3 +39,7 @@ class Container(containers.DeclarativeContainer):
     user_service = providers.Factory(
         UserService, user_repository=user_repository, logger=logger
     )
+
+    todo_client = TodoApiClient("https://jsonplaceholder.typicode.com")
+
+    todo_service = providers.Factory(TodoService, todo_client, logger=logger)

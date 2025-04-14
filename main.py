@@ -11,7 +11,7 @@ from sqlmodel import SQLModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
 
-from api.routes import user_router
+from api.routes import todo_router, user_router
 from core.container import Container
 from core.logger.exception_handlers import (
     global_exception_handler,
@@ -37,6 +37,7 @@ container.config.logging.to_console.from_env("LOG_TO_CONSOLE", True)
 container.config.logging.rotation_days.from_env("ROTATION_DAYS", 5)
 container.config.logging.file.from_env("LOG_FILE", "logs/app.log")
 container.wire(modules=["core.logger.logger_middleware", "api.routes.user_router"])
+container.wire(modules=["core.logger.logger_middleware", "api.routes.todo_router"])
 container.wire(modules=["core.logger.exception_handlers"])
 
 app.container = container
@@ -52,6 +53,7 @@ else:
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(user_router.router)
+app.include_router(todo_router.router)
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 
