@@ -16,3 +16,6 @@ uv run uvicorn main:app --host=0.0.0.0
 
 # Execute manual pre commit
 pre-commit run --all-files
+
+# Execute this to run on Render
+uv pip freeze > requirements.txt
