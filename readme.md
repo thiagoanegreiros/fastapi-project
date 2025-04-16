@@ -24,7 +24,15 @@ It demonstrates **modern Python engineering practices**, including structured lo
 - ✅ Environment configuration with `.env`
 - ✅ Ready for CI/CD with `pre-commit`, `ruff`, and `coverage`
 - ✅ Google OAuth2 login with session-based authentication
-> ⚡ Este projeto usa [uv](https://github.com/astral-sh/uv) para gerenciamento de ambiente e pacotes. Ele é compatível com `pip` e extremamente rápido.
+- ✅ ⚡ This project uses uv for environment and package management. It is fully compatible with pip and extremely fast.
+
+
+
+
+
+
+
+
 
 
 ---
