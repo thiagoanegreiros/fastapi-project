@@ -1,51 +1,52 @@
 {
     "version": "0.2.0",
     "configurations": [
-        {
-            "name": "Run Uvicorn",
-            "type": "python",
-            "request": "launch",
-            "module": "uvicorn",
-            "args": [
-                "main:app",
-                "--reload"
-            ],
-            "console": "integratedTerminal",
-            "python": "${workspaceFolder}/venv/bin/python",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Debug Pytest Tests",
-            "type": "python",
-            "request": "launch",
-            "module": "pytest",
-            "args": [
-                "tests"
-              ],
-            "justMyCode": false,
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Ruff - Check",
-            "type": "python",
-            "request": "launch",
-            "module": "ruff",
-            "args": ["check", "."],
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "name": "Ruff - Format and Fix",
-            "type": "program",
-            "request": "launch",
-            "preLaunchTask": "Ruff - Format & Fix",
-            "program": "/bin/bash",
-            "args": ["-c", "echo 'Ruff Format & Fix Completed'"],
-            "console": "integratedTerminal"
+      {
+        "name": "Run Uvicorn",
+        "type": "python",
+        "request": "launch",
+        "module": "uvicorn",
+        "args": [
+          "main:app",
+          "--reload"
+        ],
+        "console": "integratedTerminal",
+        "python": "${workspaceFolder}/.venv/bin/python",
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}"
         }
+      },
+      {
+        "name": "Debug Pytest Tests",
+        "type": "python",
+        "request": "launch",
+        "module": "pytest",
+        "args": [
+          "tests"
+        ],
+        "justMyCode": false,
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}"
+        }
+      },
+      {
+        "name": "Ruff - Check",
+        "type": "python",
+        "request": "launch",
+        "module": "ruff",
+        "args": ["check", "."],
+        "console": "integratedTerminal",
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "name": "Ruff - Format and Fix",
+        "type": "program",
+        "request": "launch",
+        "preLaunchTask": "Ruff - Format & Fix",
+        "program": "/bin/bash",
+        "args": ["-c", "echo 'Ruff Format & Fix Completed'"],
+        "console": "integratedTerminal"
+      }
     ]
-}
+  }
+  

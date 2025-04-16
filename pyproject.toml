@@ -24,3 +24,27 @@ exclude_lines = [
     "def __repr__",
     "def __str__"
 ]
+
+[project]
+name = "MyFastAPI"
+version = "1.0"
+requires-python = "==3.12.9"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic",
+    "sqlalchemy",
+    "dependency-injector",
+    "uuid",
+    "pytest",
+    "ruff",
+    "sqlmodel",
+    "pytest-cov",
+    "httpx",
+    "pre-commit",
+    "python-dotenv",
+    "pytest-asyncio",
+    "authlib",
+    "itsdangerous",
+    "starlette",
+]
