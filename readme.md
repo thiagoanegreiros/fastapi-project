@@ -24,6 +24,7 @@ It demonstrates **modern Python engineering practices**, including structured lo
 - ✅ Environment configuration with `.env`
 - ✅ Ready for CI/CD with `pre-commit`, `ruff`, and `coverage`
 - ✅ Google OAuth2 login with session-based authentication
+> ⚡ Este projeto usa [uv](https://github.com/astral-sh/uv) para gerenciamento de ambiente e pacotes. Ele é compatível com `pip` e extremamente rápido.
 
 
 ---
@@ -54,10 +55,7 @@ tests/
 
 ```bash
 # Run all tests
-PYTHONPATH=. pytest --cov
-
-# Show test coverage
-coverage report -m
+uv run coverage run -m pytest --cov-report=xml
 ```
 
 📈 Test coverage is enforced via a **pre-push hook**.
@@ -74,7 +72,7 @@ Before every commit or push, the project automatically runs:
 
 ```bash
 # Install pre-commit hooks
-pip install pre-commit
+uv install pre-commit
 pre-commit install
 ```
 
@@ -85,9 +83,9 @@ pre-commit install
 ```bash
 git clone https://github.com/thiagoanegreiros/fastapi-project
 cd fastapi-project
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+uv venv
+source .venv/bin/activate
+uv sync
 cp .env.example .env
 ```
 
