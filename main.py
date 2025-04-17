@@ -1,7 +1,6 @@
 import os
 
 from authlib.integrations.starlette_client import OAuth
-from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.requests import Request
@@ -10,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlmodel import SQLModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
+from ta_envy import Env
 
 from api.routes import todo_router, user_router
 from core.container import Container
@@ -20,7 +20,7 @@ from core.logger.exception_handlers import (
 )
 from core.logger.logger_middleware import RequestLoggingMiddleware
 
-load_dotenv()
+env = Env(required=["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"])
 
 app = FastAPI()
 
@@ -60,8 +60,8 @@ app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 oauth = OAuth()
 oauth.register(
     name="google",
-    client_id=os.getenv("GOOGLE_CLIENT_ID"),
-    client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+    client_id=env.get("GOOGLE_CLIENT_ID", type=str),
+    client_secret=env.get("GOOGLE_CLIENT_SECRET", type=str),
     server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
     client_kwargs={"scope": "openid email profile"},
 )

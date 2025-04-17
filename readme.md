@@ -25,15 +25,7 @@ It demonstrates **modern Python engineering practices**, including structured lo
 - ✅ Ready for CI/CD with `pre-commit`, `ruff`, and `coverage`
 - ✅ Google OAuth2 login with session-based authentication
 - ✅ ⚡ This project uses uv for environment and package management. It is fully compatible with pip and extremely fast.
-
-
-
-
-
-
-
-
-
+- ✅ Environment configuration with .env using a custom PyPI package: ta-envy
 
 ---
 
