@@ -625,14 +625,14 @@ wheels = [
 
 [[package]]
 name = "ta-envy"
-version = "0.1.0"
+version = "0.1.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "build" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/29/d5/91402867c1469507430d47b4a0839bc662eddc37ae11710b95428ff82ca6/ta_envy-0.1.0.tar.gz", hash = "sha256:e025473f45850942703170359dff9e3cbfde2d97d46126d247c147b7929463b6", size = 9461 }
+sdist = { url = "https://files.pythonhosted.org/packages/a6/c3/da25b6f7dec96fb6091f50ca803f258beb10ed0c03649da10f2e72ebaef1/ta_envy-0.1.2.tar.gz", hash = "sha256:b9b9c496112364eddf21a91de68526e1546f811488de16a3fbc4df2b01535d52", size = 9598 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ca/13/28fa395d74f917fd49879bcd8e226b863e6d17a2b520cf7b928f642ec5bb/ta_envy-0.1.0-py3-none-any.whl", hash = "sha256:e7144df07f43e4292a44d7b26866a8e9468c689622e6a3b5a9ac2db77398cccc", size = 2637 },
+    { url = "https://files.pythonhosted.org/packages/23/c7/4d16b816adcdaed565f75a0139a13011c9beed54ac2cd69e81b493e71bd8/ta_envy-0.1.2-py3-none-any.whl", hash = "sha256:68773517ec983a820ab82279da4987dcfa823284fe6c78110abbaeb47f225d99", size = 2772 },
 ]
 
 [[package]]
