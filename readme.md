@@ -32,19 +32,42 @@ It demonstrates **modern Python engineering practices**, including structured lo
 ## 🧱 Project Structure
 
 ```
-core/
-├── domain/            # Entities and contracts (pure models)
-├── application/       # Use cases (services)
-├── container.py       # Dependency Injection setup
-
-infrastructure/
-├── database/          # Concrete repositories (SQLModel)
-
-api/
-├── routes/            # FastAPI routes connected to the Application layer
-
-tests/
-├──                    # Unit tests with mocks and 100% coverage
+project-root/
+├── .vscode/                      # VS Code editor settings (optional)
+│
+├── api/                          # HTTP interface layer (FastAPI)
+│   └── routes/                   # Route definitions organized by domain context (e.g., todo, user)
+│       ├── todo_router.py
+│       └── user_router.py
+│
+├── core/                         # Application core following Hexagonal Architecture
+│   ├── application/              # Use cases (application services)
+│   ├── domain/                   # Business entities, value objects, and abstract interfaces
+│   ├── logger/                   # Structured logging with middleware and request context
+│   │   ├── exception_handlers.py # Centralized exception management
+│   │   ├── logger.py             # Logger setup
+│   │   ├── logger_middleware.py  # Middleware for logging and request timing
+│   │   └── request_context.py    # Per-request scoped context (e.g., request_id)
+│   ├── auth.py                   # Authentication logic (Google OAuth2, etc.)
+│   └── container.py              # Dependency injection container using `dependency-injector`
+│
+├── infrastructure/              # External systems and adapter implementations
+│   ├── api/                      # External API clients (e.g., REST clients)
+│   │   └── todo_api_client.py
+│   └── database/                 # Persistent repositories and models using SQLModel
+│       ├── base_repository.py    # Generic base repository with common CRUD logic
+│       ├── models.py             # ORM models mapped to the domain
+│       └── user_repository.py    # User-specific repository implementation
+│
+├── logs/                         # Log output files (runtime logs, if enabled)
+├── scripts/                      # Utility scripts (e.g., manual testing, data generation)
+├── static/                       # Static assets (optional, if needed)
+├── tests/                        # Unit tests organized by layer (100% coverage with mocks)
+│
+├── .env                          # Optional local environment file (loaded via `ta-envy` from PyPI)
+├── pyproject.toml                # Project configuration (dependencies, linting, formatting, etc.)
+├── README.md                     # Project documentation and usage instructions
+└── pre-commit-config.yaml        # Pre-commit hooks (e.g., `ruff`, `black`, `isort`, `coverage`)
 ```
 
 > All requests go through the API → Application → Infrastructure. Domain layer does not depend on external details.
