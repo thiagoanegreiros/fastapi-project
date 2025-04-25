@@ -26,6 +26,7 @@ It is running on https://python-studies.onrender.com/docs
 - ✅ Environment configuration with `.env`
 - ✅ Ready for CI/CD with `pre-commit`, `ruff`, and `coverage`
 - ✅ Google OAuth2 login with session-based authentication
+- ✅ GraphQL API integration using Strawberry
 - ✅ ⚡ This project uses uv for environment and package management. It is fully compatible with pip and extremely fast.
 - ✅ Environment configuration with .env using a custom PyPI package: ta-envy
 
@@ -38,6 +39,9 @@ project-root/
 ├── .vscode/                      # VS Code editor settings (optional)
 │
 ├── api/                          # HTTP interface layer (FastAPI)
+│   ├── graphql/                  # GraphQL (Strawberry)
+│   │   └── resolvers.py          # GraphQL resolvers
+│   │   └── schema.py             # GraphQL schema definition
 │   └── routes/                   # Route definitions organized by domain context (e.g., todo, user)
 │       ├── todo_router.py
 │       └── user_router.py

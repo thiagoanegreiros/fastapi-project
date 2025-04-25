@@ -47,5 +47,6 @@ dependencies = [
     "authlib",
     "itsdangerous",
     "starlette",
-    "ta-envy"
+    "ta-envy",
+    "strawberry-graphql[fastapi]"
 ]

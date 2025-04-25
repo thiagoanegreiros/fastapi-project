@@ -1,5 +1,6 @@
 import os
 
+
 from authlib.integrations.starlette_client import OAuth
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
@@ -9,8 +10,10 @@ from fastapi.staticfiles import StaticFiles
 from sqlmodel import SQLModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
+from strawberry.fastapi import GraphQLRouter
 from ta_envy import Env
 
+from api.graphql.schema import schema
 from api.routes import todo_router, user_router
 from core.container import Container
 from core.logger.exception_handlers import (
@@ -51,9 +54,25 @@ if not os.path.exists("db.sqlite3"):
 else:
     logger.info("📁 Banco já existe, sem necessidade de criar.")
 
+
+# Static Route
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# REST Routes
 app.include_router(user_router.router)
 app.include_router(todo_router.router)
+
+# GraphQL Route
+def get_context():
+    return {
+        "todo_service": container.todo_service(),
+        "logger": container.logger(),
+    }
+
+graphql_app = GraphQLRouter(schema, context_getter=get_context)
+app.include_router(graphql_app, prefix="/graphql")
+
+# Middlewares
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 
