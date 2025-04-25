@@ -11,7 +11,8 @@ This project is a backend API built with **Python 3.12** and **FastAPI**, follow
 
 It demonstrates **modern Python engineering practices**, including structured logging, 100% test coverage, and clean code separation.
 
-It is running on https://python-studies.onrender.com/docs
+API is running on https://python-studies.onrender.com/docs
+GraphQL is running on https://python-studies.onrender.com/graphql
 
 ---
 
