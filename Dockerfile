@@ -1,4 +1,3 @@
-# Imagem base oficial do Python
 FROM python:3.12.2-slim
 
 # Instala curl e utilitários para baixar o uv
