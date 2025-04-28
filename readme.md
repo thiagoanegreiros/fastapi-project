@@ -27,7 +27,8 @@ GraphQL is running on https://python-studies.onrender.com/graphql
 - ✅ Dependency injection using `dependency-injector`
 - ✅ Environment configuration with `.env`
 - ✅ Ready for CI/CD with `pre-commit`, `ruff`, and `coverage`
-- ✅ Google OAuth2 login with session-based authentication
+- ✅ Google OAuth2 login
+- ✅ JWT-based login and authentication for stateless APIs ⭐️
 - ✅ GraphQL API integration using Strawberry
 - ✅ ⚡ This project uses uv for environment and package management. It is fully compatible with pip and extremely fast.
 - ✅ Environment configuration with .env using a custom PyPI package: ta-envy
