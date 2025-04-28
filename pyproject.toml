@@ -48,5 +48,6 @@ dependencies = [
     "itsdangerous",
     "starlette",
     "ta-envy",
+    "python-jose[cryptography]",
     "strawberry-graphql[fastapi]"
 ]
