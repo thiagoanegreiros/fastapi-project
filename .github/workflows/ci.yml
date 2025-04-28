@@ -8,13 +8,14 @@ on:
 
 env:
   PYTHONPATH: ${{ github.workspace }}
-
 jobs:
   test:
     runs-on: ubuntu-latest
     env:
       PYTHONPATH: ${{ github.workspace }}
-
+      JWT_SECRET_KEY: ${{ vars.JWT_SECRET_KEY }}
+      FRONT_REDIRECT_URI: ${{ vars.FRONT_REDIRECT_URI }}
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
