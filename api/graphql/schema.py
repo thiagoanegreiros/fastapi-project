@@ -1,5 +1,9 @@
-import strawberry
 from typing import List
+
+import strawberry
+
+from api.graphql import resolvers
+
 
 @strawberry.type
 class Todo:
@@ -8,10 +12,10 @@ class Todo:
     userId: str
     completed: bool
 
-from api.graphql import resolvers
 
 @strawberry.type
 class Query:
     todos: List[Todo] = strawberry.field(resolver=resolvers.list_todos)
+
 
 schema = strawberry.Schema(query=Query)

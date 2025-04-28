@@ -1,8 +1,8 @@
 import os
-
+from datetime import timedelta
 
 from authlib.integrations.starlette_client import OAuth
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.requests import Request
 from fastapi.responses import FileResponse, RedirectResponse
@@ -15,6 +15,7 @@ from ta_envy import Env
 
 from api.graphql.schema import schema
 from api.routes import todo_router, user_router
+from core.auth import create_access_token, verify_access_token
 from core.container import Container
 from core.logger.exception_handlers import (
     global_exception_handler,
@@ -23,7 +24,15 @@ from core.logger.exception_handlers import (
 )
 from core.logger.logger_middleware import RequestLoggingMiddleware
 
-env = Env(required=["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"])
+env = Env(
+    required=[
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "JWT_SECRET_KEY",
+        "REDIRECT_URI",
+        "FRONT_REDIRECT_URI",
+    ]
+)
 
 app = FastAPI()
 
@@ -62,12 +71,14 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(user_router.router)
 app.include_router(todo_router.router)
 
+
 # GraphQL Route
 def get_context():
     return {
         "todo_service": container.todo_service(),
         "logger": container.logger(),
     }
+
 
 graphql_app = GraphQLRouter(schema, context_getter=get_context)
 app.include_router(graphql_app, prefix="/graphql")
@@ -98,25 +109,26 @@ def read_root():
 
 @app.get("/login")
 async def login(request: Request):
-    redirect_uri = os.getenv("REDIRECT_URI")
+    redirect_uri = env.get("REDIRECT_URI")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
 @app.get("/auth")
 async def auth(request: Request):
     token = await oauth.google.authorize_access_token(request)
-
     user_info = token["userinfo"]
-    print("✅ Usuário autenticado:", user_info)
 
-    request.session["user"] = dict(user_info)
+    access_token = create_access_token(
+        data={"sub": user_info["email"]}, expires_delta=timedelta(minutes=60)
+    )
 
-    return RedirectResponse(url="/me")
+    return RedirectResponse(
+        url=f"{env.get('FRONT_REDIRECT_URI', str)}?token={access_token}"
+    )
 
 
 @app.get("/me")
 async def me(request: Request):
-    user = request.session.get("user")
-    if not user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    return user
+    token = request.query_params.get("token")
+    payload = verify_access_token(token)
+    return payload
