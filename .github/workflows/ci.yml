@@ -15,6 +15,7 @@ jobs:
       PYTHONPATH: ${{ github.workspace }}
       JWT_SECRET_KEY: ${{ vars.JWT_SECRET_KEY }}
       FRONT_REDIRECT_URI: ${{ vars.FRONT_REDIRECT_URI }}
+      MOVIE_API_KEY: ${{ vars.MOVIE_API_KEY }}
     
     steps:
       - name: Checkout code

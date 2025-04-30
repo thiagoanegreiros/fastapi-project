@@ -33,7 +33,6 @@ def test_find_all(todo_service, mock_gateway, mock_logger):
     result = todo_service.find_all()
 
     # Assert
-    mock_logger.info.assert_called_once_with("Buscando todos os ToDos")
     mock_gateway.find_all.assert_called_once()
     assert result == todos
 
@@ -47,7 +46,6 @@ def test_get(todo_service, mock_gateway, mock_logger):
     result = todo_service.get(1)
 
     # Assert
-    mock_logger.debug.assert_called_once_with("Buscando ToDo com ID: 1")
     mock_gateway.get.assert_called_once_with(1)
     assert result == todo
 
@@ -60,6 +58,5 @@ def test_get_not_found(todo_service, mock_gateway, mock_logger):
     result = todo_service.get(999)
 
     # Assert
-    mock_logger.debug.assert_called_once_with("Buscando ToDo com ID: 999")
     mock_gateway.get.assert_called_once_with(999)
     assert result is None

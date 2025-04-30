@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+from fastapi.openapi.utils import get_openapi
 
 from authlib.integrations.starlette_client import OAuth
 from fastapi import FastAPI
@@ -14,7 +15,7 @@ from strawberry.fastapi import GraphQLRouter
 from ta_envy import Env
 
 from api.graphql.schema import schema
-from api.routes import todo_router, user_router
+from api.routes import movies_router, todo_router, user_router
 from core.auth import create_access_token, verify_access_token
 from core.container import Container
 from core.logger.exception_handlers import (
@@ -50,6 +51,7 @@ container.config.logging.rotation_days.from_env("ROTATION_DAYS", 5)
 container.config.logging.file.from_env("LOG_FILE", "logs/app.log")
 container.wire(modules=["core.logger.logger_middleware", "api.routes.user_router"])
 container.wire(modules=["core.logger.logger_middleware", "api.routes.todo_router"])
+container.wire(modules=["core.logger.logger_middleware", "api.routes.movies_router"])
 container.wire(modules=["core.logger.exception_handlers"])
 
 app.container = container
@@ -70,7 +72,31 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # REST Routes
 app.include_router(user_router.router)
 app.include_router(todo_router.router)
+app.include_router(movies_router.router)
 
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="My API",
+        version="1.0.0",
+        description="API com autenticação via Bearer Token JWT",
+        routes=app.routes,
+    )
+    openapi_schema["components"]["securitySchemes"] = {
+        "BearerAuth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+        }
+    }
+    for path in openapi_schema["paths"].values():
+        for operation in path.values():
+            operation["security"] = [{"BearerAuth": []}]
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
 
 # GraphQL Route
 def get_context():

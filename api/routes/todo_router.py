@@ -20,5 +20,5 @@ def get_todo(
 ):
     user = service.get(todo_id)
     if user is None:
-        raise HTTPException(status_code=404, detail="Not Found Todo")
+        raise HTTPException(status_code=404, detail="Todo Not Found")
     return user

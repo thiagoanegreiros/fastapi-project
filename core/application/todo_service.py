@@ -6,8 +6,6 @@ from core.logger.logger import Logger
 
 
 class TodoService:
-    """Serviço de Usuário desacoplado de repositórios específicos"""
-
     def __init__(
         self,
         gateway: ITodoGateway,
@@ -17,9 +15,7 @@ class TodoService:
         self.logger = logger
 
     def find_all(self) -> List[ToDo]:
-        self.logger.info("Buscando todos os ToDos")
         return self.gateway.find_all()
 
     def get(self, id: str) -> Optional[ToDo]:
-        self.logger.debug(f"Buscando ToDo com ID: {id}")
         return self.gateway.get(id)

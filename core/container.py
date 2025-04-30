@@ -1,9 +1,11 @@
 from dependency_injector import containers, providers
 from sqlmodel import Session, create_engine
 
+from core.application.movie_service import MovieService
 from core.application.todo_service import TodoService
 from core.application.user_service import UserService
 from core.logger.logger import Logger
+from infrastructure.api.movies_api_client import MoviesApiClient
 from infrastructure.api.todo_api_client import TodoApiClient
 from infrastructure.database.user_repository import UserRepository
 
@@ -16,6 +18,7 @@ class Container(containers.DeclarativeContainer):
 
     wiring_config = containers.WiringConfiguration(modules=["api.routes.user_router"])
     wiring_config = containers.WiringConfiguration(modules=["api.routes.todo_router"])
+    wiring_config = containers.WiringConfiguration(modules=["api.routes.movies_router"])
 
     # Cria o engine como singleton (não copia)
     engine = providers.Singleton(
@@ -43,3 +46,7 @@ class Container(containers.DeclarativeContainer):
     todo_client = TodoApiClient("https://jsonplaceholder.typicode.com")
 
     todo_service = providers.Factory(TodoService, todo_client, logger=logger)
+
+    movies_client = MoviesApiClient("https://api.themoviedb.org/3")
+
+    movie_service = providers.Factory(MovieService, movies_client, logger=logger)

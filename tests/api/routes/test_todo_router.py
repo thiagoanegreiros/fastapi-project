@@ -63,5 +63,5 @@ def test_get_user_not_found(client_and_gateway):
 
     response = client.get("/todos/999")
     assert response.status_code == 404
-    assert response.json()["detail"] == "Not Found Todo"
+    assert response.json()["detail"] == "Todo Not Found"
     mock_repo.get.assert_called_once_with(999)
