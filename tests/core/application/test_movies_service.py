@@ -1,5 +1,7 @@
 from unittest.mock import Mock
+
 import pytest
+
 from core.application.movie_service import MovieService
 from core.domain.movie import Movie
 
@@ -22,8 +24,20 @@ def movie_service(mock_gateway, mock_logger):
 def test_find_all(movie_service, mock_gateway):
     # Arrange
     movies = [
-        Movie(id=1, title="Matrix", poster_path="url1", overview="Neo", release_date="1999-03-31"),
-        Movie(id=2, title="Inception", poster_path="url2", overview="Dream", release_date="2010-07-16"),
+        Movie(
+            id=1,
+            title="Matrix",
+            poster_path="url1",
+            overview="Neo",
+            release_date="1999-03-31",
+        ),
+        Movie(
+            id=2,
+            title="Inception",
+            poster_path="url2",
+            overview="Dream",
+            release_date="2010-07-16",
+        ),
     ]
     mock_gateway.find_all.return_value = movies
 
@@ -38,7 +52,13 @@ def test_find_all(movie_service, mock_gateway):
 def test_popular(movie_service, mock_gateway):
     # Arrange
     movies = [
-        Movie(id=1, title="Popular Movie", poster_path="url", overview="Famous", release_date="2024-01-01"),
+        Movie(
+            id=1,
+            title="Popular Movie",
+            poster_path="url",
+            overview="Famous",
+            release_date="2024-01-01",
+        ),
     ]
     mock_gateway.popular.return_value = movies
 
@@ -52,7 +72,13 @@ def test_popular(movie_service, mock_gateway):
 
 def test_get_found(movie_service, mock_gateway):
     # Arrange
-    movie = Movie(id=1, title="Matrix", poster_path="url", overview="Neo", release_date="1999-03-31")
+    movie = Movie(
+        id=1,
+        title="Matrix",
+        poster_path="url",
+        overview="Neo",
+        release_date="1999-03-31",
+    )
     mock_gateway.get.return_value = movie
 
     # Act

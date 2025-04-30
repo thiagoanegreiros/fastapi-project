@@ -1,10 +1,10 @@
 import os
 from datetime import timedelta
-from fastapi.openapi.utils import get_openapi
 
 from authlib.integrations.starlette_client import OAuth
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
+from fastapi.openapi.utils import get_openapi
 from fastapi.requests import Request
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -74,6 +74,7 @@ app.include_router(user_router.router)
 app.include_router(todo_router.router)
 app.include_router(movies_router.router)
 
+
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
@@ -96,7 +97,9 @@ def custom_openapi():
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
+
 app.openapi = custom_openapi
+
 
 # GraphQL Route
 def get_context():

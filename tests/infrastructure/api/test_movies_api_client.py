@@ -1,4 +1,5 @@
 from unittest.mock import Mock, patch
+
 import pytest
 from httpx import HTTPStatusError, Request, Response
 
@@ -14,8 +15,20 @@ def client():
 def test_find_all(client):
     movies_data = {
         "results": [
-            {"id": 1, "title": "Matrix", "poster_path": "/poster1.jpg", "overview": "Neo", "release_date": "1999-03-31"},
-            {"id": 2, "title": "Inception", "poster_path": "/poster2.jpg", "overview": "Dream", "release_date": "2010-07-16"},
+            {
+                "id": 1,
+                "title": "Matrix",
+                "poster_path": "/poster1.jpg",
+                "overview": "Neo",
+                "release_date": "1999-03-31",
+            },
+            {
+                "id": 2,
+                "title": "Inception",
+                "poster_path": "/poster2.jpg",
+                "overview": "Dream",
+                "release_date": "2010-07-16",
+            },
         ]
     }
     mock_response = Mock()
@@ -32,10 +45,13 @@ def test_find_all(client):
         )
 
         expected = [
-            Movie.model_validate({
-                **m,
-                "poster_path": f"https://image.tmdb.org/t/p/w600_and_h900_bestv2{m['poster_path']}"
-            }) for m in movies_data["results"]
+            Movie.model_validate(
+                {
+                    **m,
+                    "poster_path": f"https://image.tmdb.org/t/p/w600_and_h900_bestv2{m['poster_path']}",
+                }
+            )
+            for m in movies_data["results"]
         ]
         assert len(result) == len(expected)
 
@@ -43,7 +59,13 @@ def test_find_all(client):
 def test_popular(client):
     movies_data = {
         "results": [
-            {"id": 1, "title": "Popular Movie", "poster_path": "/popular.jpg", "overview": "Overview", "release_date": "2024-01-01"},
+            {
+                "id": 1,
+                "title": "Popular Movie",
+                "poster_path": "/popular.jpg",
+                "overview": "Overview",
+                "release_date": "2024-01-01",
+            },
         ]
     }
     mock_response = Mock()
@@ -54,14 +76,15 @@ def test_popular(client):
         result = client.popular()
 
         mock_get.assert_called_once_with(
-            "https://fakeapi.com/movie/popular",
-            headers=client.headers
+            "https://fakeapi.com/movie/popular", headers=client.headers
         )
         assert result == [
-            Movie.model_validate({
-                **movies_data["results"][0],
-                "poster_path": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/popular.jpg"
-            })
+            Movie.model_validate(
+                {
+                    **movies_data["results"][0],
+                    "poster_path": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/popular.jpg",
+                }
+            )
         ]
 
 
@@ -71,7 +94,7 @@ def test_get(client):
         "title": "Matrix",
         "poster_path": "/matrix.jpg",
         "overview": "Neo saves the world",
-        "release_date": "1999-03-31"
+        "release_date": "1999-03-31",
     }
     mock_response = Mock()
     mock_response.json.return_value = movie_data
@@ -81,13 +104,14 @@ def test_get(client):
         result = client.get(1)
 
         mock_get.assert_called_once_with(
-            "https://fakeapi.com/movie/1",
-            headers=client.headers
+            "https://fakeapi.com/movie/1", headers=client.headers
         )
-        assert result == Movie.model_validate({
-            **movie_data,
-            "poster_path": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/matrix.jpg"
-        })
+        assert result == Movie.model_validate(
+            {
+                **movie_data,
+                "poster_path": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/matrix.jpg",
+            }
+        )
 
 
 def test_find_all_http_error(client):
