@@ -1,5 +1,4 @@
 from unittest.mock import MagicMock
-
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -9,6 +8,7 @@ from core.container import Container
 from core.domain.movie import Movie
 from core.logger.logger import Logger
 from core.logger.logger_middleware import RequestLoggingMiddleware
+from core.auth import require_auth
 
 
 @pytest.fixture
@@ -20,12 +20,13 @@ def client_and_service():
 
     container.movie_service.override(mock_service)
     container.logger.override(mock_logger)
-    container.wire(
-        modules=["api.routes.movies_router", "core.logger.logger_middleware"]
-    )
+    container.wire(modules=["api.routes.movies_router", "core.logger.logger_middleware"])
 
     app = FastAPI()
     app.add_middleware(RequestLoggingMiddleware)
+
+    app.dependency_overrides[require_auth] = lambda: {"email": "test@example.com"}
+
     app.container = container
     app.include_router(movies_router.router)
 
@@ -35,20 +36,8 @@ def client_and_service():
 
 def test_list_movies(client_and_service):
     client, mock_service = client_and_service
-    movie1 = Movie(
-        id=1,
-        title="The Matrix",
-        poster_path="url1",
-        overview="Test",
-        release_date="1999-03-31",
-    )
-    movie2 = Movie(
-        id=2,
-        title="Inception",
-        poster_path="url2",
-        overview="Dreams",
-        release_date="2010-07-16",
-    )
+    movie1 = Movie(id=1, title="The Matrix", poster_path="url1", overview="Test", release_date="1999-03-31")
+    movie2 = Movie(id=2, title="Inception", poster_path="url2", overview="Dreams", release_date="2010-07-16")
 
     mock_service.find_all.return_value = [movie1, movie2]
 
@@ -60,13 +49,7 @@ def test_list_movies(client_and_service):
 
 def test_popular_movies(client_and_service):
     client, mock_service = client_and_service
-    movie = Movie(
-        id=3,
-        title="Interstellar",
-        poster_path="url3",
-        overview="Space travel",
-        release_date="2014-11-07",
-    )
+    movie = Movie(id=3, title="Interstellar", poster_path="url3", overview="Space travel", release_date="2014-11-07")
 
     mock_service.popular.return_value = [movie]
 
@@ -78,13 +61,7 @@ def test_popular_movies(client_and_service):
 
 def test_get_movie_found(client_and_service):
     client, mock_service = client_and_service
-    movie = Movie(
-        id=1,
-        title="The Matrix",
-        poster_path="url",
-        overview="Neo",
-        release_date="1999-03-31",
-    )
+    movie = Movie(id=1, title="The Matrix", poster_path="url", overview="Neo", release_date="1999-03-31")
 
     mock_service.get.return_value = movie
 
