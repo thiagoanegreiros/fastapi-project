@@ -148,3 +148,42 @@ def test_get_http_error(client):
 
         with pytest.raises(HTTPStatusError):
             client.get(1)
+
+
+def test_find_all_without_poster_path(client):
+    movies_data = {
+        "results": [
+            {
+                "id": 3,
+                "title": "Posterless Movie",
+                "overview": "No poster here",
+                "release_date": "2020-01-01",
+                "poster_path": None  # necessário para o modelo validar
+            },
+        ]
+    }
+    mock_response = Mock()
+    mock_response.json.return_value = movies_data
+    mock_response.raise_for_status.return_value = None
+
+    with patch("httpx.get", return_value=mock_response):
+        result = client.find_all("posterless")
+        assert len(result) == 1
+        assert result[0].title == "Posterless Movie"
+
+
+def test_get_without_poster_path(client):
+    movie_data = {
+        "id": 99,
+        "title": "The Hidden Poster",
+        "overview": "No image here",
+        "release_date": "2021-12-12",
+        "poster_path": None  # necessário para o modelo validar
+    }
+    mock_response = Mock()
+    mock_response.json.return_value = movie_data
+    mock_response.raise_for_status.return_value = None
+
+    with patch("httpx.get", return_value=mock_response):
+        result = client.get(99)
+        assert result.title == "The Hidden Poster"
