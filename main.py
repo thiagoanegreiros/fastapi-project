@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+from urllib.parse import parse_qs, urlencode
 
 from authlib.integrations.starlette_client import OAuth
 from fastapi import FastAPI
@@ -139,7 +140,10 @@ def read_root():
 @app.get("/login")
 async def login(request: Request):
     redirect_uri = env.get("REDIRECT_URI")
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+    frontend_redirect_uri = request.query_params.get("redirect_uri")
+
+    state = urlencode({"redirect_uri": frontend_redirect_uri})
+    return await oauth.google.authorize_redirect(request, redirect_uri, state=state)
 
 
 @app.get("/auth")
@@ -147,13 +151,15 @@ async def auth(request: Request):
     token = await oauth.google.authorize_access_token(request)
     user_info = token["userinfo"]
 
+    state_raw = request.query_params.get("state", "")
+    state_data = parse_qs(state_raw)
+    redirect_uri = state_data.get("redirect_uri", [env.get("FRONT_REDIRECT_URI")])[0]
+
     access_token = create_access_token(
         data={"sub": user_info["email"]}, expires_delta=timedelta(minutes=60)
     )
 
-    return RedirectResponse(
-        url=f"{env.get('FRONT_REDIRECT_URI', str)}?token={access_token}"
-    )
+    return RedirectResponse(url=f"{redirect_uri}?token={access_token}")
 
 
 @app.get("/me")
