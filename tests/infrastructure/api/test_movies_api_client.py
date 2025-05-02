@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from httpx import HTTPStatusError, Request, Response
@@ -12,7 +12,8 @@ def client():
     return MoviesApiClient(base_url="https://fakeapi.com")
 
 
-def test_find_all(client):
+@pytest.mark.asyncio
+async def test_find_all(client):
     movies_data = {
         "results": [
             {
@@ -31,12 +32,15 @@ def test_find_all(client):
             },
         ]
     }
-    mock_response = Mock()
+
+    mock_response = MagicMock()
     mock_response.json.return_value = movies_data
     mock_response.raise_for_status.return_value = None
 
-    with patch("httpx.get", return_value=mock_response) as mock_get:
-        result = client.find_all("matrix")
+    with patch(
+        "httpx.AsyncClient.get", new=AsyncMock(return_value=mock_response)
+    ) as mock_get:
+        result = await client.find_all("matrix")
 
         mock_get.assert_called_once_with(
             "https://fakeapi.com/search/movie",
@@ -56,7 +60,8 @@ def test_find_all(client):
         assert len(result) == len(expected)
 
 
-def test_popular(client):
+@pytest.mark.asyncio
+async def test_popular(client):
     movies_data = {
         "results": [
             {
@@ -68,12 +73,15 @@ def test_popular(client):
             },
         ]
     }
-    mock_response = Mock()
+
+    mock_response = MagicMock()
     mock_response.json.return_value = movies_data
     mock_response.raise_for_status.return_value = None
 
-    with patch("httpx.get", return_value=mock_response) as mock_get:
-        result = client.popular()
+    with patch(
+        "httpx.AsyncClient.get", new=AsyncMock(return_value=mock_response)
+    ) as mock_get:
+        result = await client.popular()
 
         mock_get.assert_called_once_with(
             "https://fakeapi.com/movie/popular", headers=client.headers
@@ -88,7 +96,8 @@ def test_popular(client):
         ]
 
 
-def test_get(client):
+@pytest.mark.asyncio
+async def test_get(client):
     movie_data = {
         "id": 1,
         "title": "Matrix",
@@ -96,61 +105,73 @@ def test_get(client):
         "overview": "Neo saves the world",
         "release_date": "1999-03-31",
     }
-    mock_response = Mock()
+
+    mock_response = MagicMock()
     mock_response.json.return_value = movie_data
     mock_response.raise_for_status.return_value = None
 
-    with patch("httpx.get", return_value=mock_response) as mock_get:
-        result = client.get(1)
+    with patch(
+        "httpx.AsyncClient.get", new=AsyncMock(return_value=mock_response)
+    ) as mock_get:
+        result = await client.get(1)
 
         mock_get.assert_called_once_with(
             "https://fakeapi.com/movie/1", headers=client.headers
         )
-        assert result == Movie.model_validate(
+
+        expected = Movie.model_validate(
             {
                 **movie_data,
                 "poster_path": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/matrix.jpg",
             }
         )
+        assert result == expected
 
 
-def test_find_all_http_error(client):
-    with patch("httpx.get") as mock_get:
-        mock_get.return_value.raise_for_status.side_effect = HTTPStatusError(
-            "Error",
-            request=Request("GET", "https://fakeapi.com/search/movie"),
-            response=Response(500),
-        )
+@pytest.mark.asyncio
+async def test_find_all_http_error(client):
+    mock_response = MagicMock()
+    mock_response.raise_for_status.side_effect = HTTPStatusError(
+        "Error",
+        request=Request("GET", "https://fakeapi.com/search/movie"),
+        response=Response(500),
+    )
 
+    with patch("httpx.AsyncClient.get", new=AsyncMock(return_value=mock_response)):
         with pytest.raises(HTTPStatusError):
-            client.find_all("matrix")
+            await client.find_all("matrix")
 
 
-def test_popular_http_error(client):
-    with patch("httpx.get") as mock_get:
-        mock_get.return_value.raise_for_status.side_effect = HTTPStatusError(
-            "Error",
-            request=Request("GET", "https://fakeapi.com/movie/popular"),
-            response=Response(500),
-        )
+@pytest.mark.asyncio
+async def test_popular_http_error(client):
+    mock_response = MagicMock()
+    mock_response.raise_for_status.side_effect = HTTPStatusError(
+        "Error",
+        request=Request("GET", "https://fakeapi.com/movie/popular"),
+        response=Response(500),
+    )
 
+    with patch("httpx.AsyncClient.get", new=AsyncMock(return_value=mock_response)):
         with pytest.raises(HTTPStatusError):
-            client.popular()
+            await client.popular()
 
 
-def test_get_http_error(client):
-    with patch("httpx.get") as mock_get:
-        mock_get.return_value.raise_for_status.side_effect = HTTPStatusError(
-            "Error",
-            request=Request("GET", "https://fakeapi.com/movie/1"),
-            response=Response(404),
-        )
+@pytest.mark.asyncio
+async def test_get_http_error(client):
+    mock_response = MagicMock()
+    mock_response.raise_for_status.side_effect = HTTPStatusError(
+        "Error",
+        request=Request("GET", "https://fakeapi.com/movie/1"),
+        response=Response(404),
+    )
 
+    with patch("httpx.AsyncClient.get", new=AsyncMock(return_value=mock_response)):
         with pytest.raises(HTTPStatusError):
-            client.get(1)
+            await client.get(1)
 
 
-def test_find_all_without_poster_path(client):
+@pytest.mark.asyncio
+async def test_find_all_without_poster_path(client):
     movies_data = {
         "results": [
             {
@@ -158,32 +179,35 @@ def test_find_all_without_poster_path(client):
                 "title": "Posterless Movie",
                 "overview": "No poster here",
                 "release_date": "2020-01-01",
-                "poster_path": None  # necessário para o modelo validar
+                "poster_path": None,
             },
         ]
     }
-    mock_response = Mock()
+
+    mock_response = MagicMock()
     mock_response.json.return_value = movies_data
     mock_response.raise_for_status.return_value = None
 
-    with patch("httpx.get", return_value=mock_response):
-        result = client.find_all("posterless")
+    with patch("httpx.AsyncClient.get", new=AsyncMock(return_value=mock_response)):
+        result = await client.find_all("posterless")
         assert len(result) == 1
         assert result[0].title == "Posterless Movie"
 
 
-def test_get_without_poster_path(client):
+@pytest.mark.asyncio
+async def test_get_without_poster_path(client):
     movie_data = {
         "id": 99,
         "title": "The Hidden Poster",
         "overview": "No image here",
         "release_date": "2021-12-12",
-        "poster_path": None  # necessário para o modelo validar
+        "poster_path": None,
     }
-    mock_response = Mock()
+
+    mock_response = MagicMock()
     mock_response.json.return_value = movie_data
     mock_response.raise_for_status.return_value = None
 
-    with patch("httpx.get", return_value=mock_response):
-        result = client.get(99)
+    with patch("httpx.AsyncClient.get", new=AsyncMock(return_value=mock_response)):
+        result = await client.get(99)
         assert result.title == "The Hidden Poster"

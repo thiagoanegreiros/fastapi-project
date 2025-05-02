@@ -30,6 +30,19 @@
         }
       },
       {
+        "name": "Debug Current Test File",
+        "type": "python",
+        "request": "launch",
+        "module": "pytest",
+        "args": [
+          "${file}"
+        ],
+        "justMyCode": false,
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}"
+        }
+      },      
+      {
         "name": "Ruff - Check",
         "type": "python",
         "request": "launch",

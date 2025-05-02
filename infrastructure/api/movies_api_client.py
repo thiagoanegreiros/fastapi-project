@@ -27,28 +27,35 @@ class MoviesApiClient(IMovieGateway):
             results.append(Movie.model_validate(movie_data))
         return results
 
-    def find_all(self, query: str) -> Optional[List[Movie]]:
-        response = httpx.get(
-            f"{self.base_url}/search/movie",
-            headers=self.headers,
-            params={"query": query},
-        )
-        response.raise_for_status()
-        return self._process_movies(response.json())
-
-    def popular(self) -> Optional[List[Movie]]:
-        response = httpx.get(f"{self.base_url}/movie/popular", headers=self.headers)
-        response.raise_for_status()
-        return self._process_movies(response.json())
-
-    def get(self, id: int) -> Movie:
-        response = httpx.get(f"{self.base_url}/movie/{id}", headers=self.headers)
-        response.raise_for_status()
-        movie_data = response.json()
-
-        if "poster_path" in movie_data:
-            movie_data["poster_path"] = (
-                f"https://image.tmdb.org/t/p/w600_and_h900_bestv2{movie_data['poster_path']}"
+    async def find_all(self, query: str) -> Optional[List[Movie]]:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{self.base_url}/search/movie",
+                headers=self.headers,
+                params={"query": query},
             )
+            response.raise_for_status()
+            return self._process_movies(response.json())
 
-        return Movie.model_validate(movie_data)
+    async def popular(self) -> Optional[List[Movie]]:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{self.base_url}/movie/popular", headers=self.headers
+            )
+            response.raise_for_status()
+            return self._process_movies(response.json())
+
+    async def get(self, id: int) -> Movie:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{self.base_url}/movie/{id}", headers=self.headers
+            )
+            response.raise_for_status()
+            movie_data = response.json()
+
+            if "poster_path" in movie_data:
+                movie_data["poster_path"] = (
+                    f"https://image.tmdb.org/t/p/w600_and_h900_bestv2{movie_data['poster_path']}"
+                )
+
+            return Movie.model_validate(movie_data)

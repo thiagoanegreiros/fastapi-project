@@ -1,31 +1,34 @@
 from typing import Generic, List, Type, TypeVar
 
-from sqlmodel import Session, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import SQLModel, select
 
-T = TypeVar("T")
+T = TypeVar("T", bound=SQLModel)
 
 
 class BaseRepository(Generic[T]):
-    def __init__(self, session: Session, model: Type[T]):
+    def __init__(self, session: AsyncSession, model: Type[T]):
         self.session = session
         self.model = model
 
-    def get(self, id: str) -> T | None:
-        return self.session.get(self.model, id)
+    async def get(self, id: str) -> T | None:
+        return await self.session.get(self.model, id)
 
-    def find_all(self) -> List[T]:
-        return self.session.exec(select(self.model)).all()
+    async def find_all(self) -> List[T]:
+        statement = select(self.model)
+        result = await self.session.execute(statement)
+        return result.scalars().all()
 
-    def save(self, entity: T) -> T:
+    async def save(self, entity: T) -> T:
         self.session.add(entity)
-        self.session.commit()
-        self.session.refresh(entity)
+        await self.session.commit()
+        await self.session.refresh(entity)
         return entity
 
-    def delete(self, id: str) -> bool:
-        obj = self.get(id)
+    async def delete(self, id: str) -> bool:
+        obj = await self.get(id)
         if obj:
-            self.session.delete(obj)
-            self.session.commit()
+            await self.session.delete(obj)
+            await self.session.commit()
             return True
         return False

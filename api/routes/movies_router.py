@@ -10,31 +10,31 @@ router = APIRouter(prefix="/movies", tags=["movies"])
 
 @router.get("/search/{query}")
 @inject
-def list_movies(
+async def list_movies(
     query: str,
     service: MovieService = Depends(Provide[Container.movie_service]),
-    _=Depends(require_auth),  # <- só para forçar autenticação
+    _=Depends(require_auth),
 ):
-    return service.find_all(query=query)
+    return await service.find_all(query=query)
 
 
 @router.get("/popular")
 @inject
-def popular(
+async def popular(
     service: MovieService = Depends(Provide[Container.movie_service]),
     _=Depends(require_auth),
 ):
-    return service.popular()
+    return await service.popular()
 
 
 @router.get("/{movie_id}")
 @inject
-def get_movie(
+async def get_movie(
     movie_id: int,
     service: MovieService = Depends(Provide[Container.movie_service]),
     _=Depends(require_auth),
 ):
-    user = service.get(movie_id)
+    user = await service.get(movie_id)
     if user is None:
         raise HTTPException(status_code=404, detail="Movie Not Found")
     return user

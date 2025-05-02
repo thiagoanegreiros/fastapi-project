@@ -9,16 +9,16 @@ router = APIRouter(prefix="/todos", tags=["todos"])
 
 @router.get("/")
 @inject
-def list_todos(service: TodoService = Depends(Provide[Container.todo_service])):
-    return service.find_all()
+async def list_todos(service: TodoService = Depends(Provide[Container.todo_service])):
+    return await service.find_all()
 
 
 @router.get("/{todo_id}")
 @inject
-def get_todo(
+async def get_todo(
     todo_id: int, service: TodoService = Depends(Provide[Container.todo_service])
 ):
-    user = service.get(todo_id)
+    user = await service.get(todo_id)
     if user is None:
         raise HTTPException(status_code=404, detail="Todo Not Found")
     return user

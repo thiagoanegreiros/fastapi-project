@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 
@@ -8,7 +8,10 @@ from core.domain.todo import ToDo
 
 @pytest.fixture
 def mock_gateway():
-    return Mock()
+    gateway = Mock()
+    gateway.find_all = AsyncMock()
+    gateway.get = AsyncMock()
+    return gateway
 
 
 @pytest.fixture
@@ -21,7 +24,8 @@ def todo_service(mock_gateway, mock_logger):
     return TodoService(gateway=mock_gateway, logger=mock_logger)
 
 
-def test_find_all(todo_service, mock_gateway, mock_logger):
+@pytest.mark.asyncio
+async def test_find_all(todo_service, mock_gateway):
     # Arrange
     todos = [
         ToDo(id=1, userId=1, title="Comprar pão", completed=False),
@@ -30,33 +34,35 @@ def test_find_all(todo_service, mock_gateway, mock_logger):
     mock_gateway.find_all.return_value = todos
 
     # Act
-    result = todo_service.find_all()
+    result = await todo_service.find_all()
 
     # Assert
-    mock_gateway.find_all.assert_called_once()
+    mock_gateway.find_all.assert_awaited_once()
     assert result == todos
 
 
-def test_get(todo_service, mock_gateway, mock_logger):
+@pytest.mark.asyncio
+async def test_get(todo_service, mock_gateway):
     # Arrange
     todo = ToDo(id=1, userId=1, title="Comprar pão", completed=False)
     mock_gateway.get.return_value = todo
 
     # Act
-    result = todo_service.get(1)
+    result = await todo_service.get(1)
 
     # Assert
-    mock_gateway.get.assert_called_once_with(1)
+    mock_gateway.get.assert_awaited_once_with(1)
     assert result == todo
 
 
-def test_get_not_found(todo_service, mock_gateway, mock_logger):
+@pytest.mark.asyncio
+async def test_get_not_found(todo_service, mock_gateway):
     # Arrange
     mock_gateway.get.return_value = None
 
     # Act
-    result = todo_service.get(999)
+    result = await todo_service.get(999)
 
     # Assert
-    mock_gateway.get.assert_called_once_with(999)
+    mock_gateway.get.assert_awaited_once_with(999)
     assert result is None

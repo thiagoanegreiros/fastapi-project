@@ -49,5 +49,6 @@ dependencies = [
     "starlette",
     "ta-envy",
     "python-jose[cryptography]",
-    "strawberry-graphql[fastapi]"
+    "strawberry-graphql[fastapi]",
+    "aiosqlite"
 ]

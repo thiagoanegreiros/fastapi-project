@@ -16,18 +16,18 @@ class UserService:
         self.user_repository = user_repository
         self.logger = logger
 
-    def save(self, user: User) -> User:
+    async def save(self, user: User) -> User:
         self.logger.info(f"Salvando usuário: {user}")
-        return self.user_repository.save(user)
+        return await self.user_repository.save(user)
 
-    def find_all(self) -> List[User]:
+    async def find_all(self) -> List[User]:
         self.logger.info("Buscando todos os usuários")
-        return self.user_repository.find_all()
+        return await self.user_repository.find_all()
 
-    def delete(self, id: str) -> bool:
+    async def delete(self, id: str) -> bool:
         self.logger.warning(f"Deletando usuário com ID: {id}")
-        return self.user_repository.delete(id)
+        return await self.user_repository.delete(id)
 
-    def get(self, id: str) -> Optional[User]:
+    async def get(self, id: str) -> Optional[User]:
         self.logger.debug(f"Buscando usuário com ID: {id}")
-        return self.user_repository.get(id)
+        return await self.user_repository.get(id)

@@ -1,5 +1,5 @@
 from dependency_injector import containers, providers
-from sqlmodel import Session, create_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from core.application.movie_service import MovieService
 from core.application.todo_service import TodoService
@@ -10,24 +10,41 @@ from infrastructure.api.todo_api_client import TodoApiClient
 from infrastructure.database.user_repository import UserRepository
 
 DB_PATH = "db.sqlite3"
-DATABASE_URL = "sqlite:///" + DB_PATH
+DATABASE_URL = "sqlite+aiosqlite:///" + DB_PATH  # ✅ async driver
 
 
 class Container(containers.DeclarativeContainer):
-    """Container de injeção de dependência"""
-
-    wiring_config = containers.WiringConfiguration(modules=["api.routes.user_router"])
-    wiring_config = containers.WiringConfiguration(modules=["api.routes.todo_router"])
-    wiring_config = containers.WiringConfiguration(modules=["api.routes.movies_router"])
-
-    # Cria o engine como singleton (não copia)
-    engine = providers.Singleton(
-        create_engine, DATABASE_URL, connect_args={"check_same_thread": False}
+    wiring_config = containers.WiringConfiguration(
+        modules=[
+            "api.routes.user_router",
+            "api.routes.todo_router",
+            "api.routes.movies_router",
+        ]
     )
 
-    session = providers.Resource(lambda engine: Session(engine), engine)
-
     config = providers.Configuration()
+
+    # ✅ Engine assíncrono
+    engine = providers.Singleton(
+        create_async_engine,
+        DATABASE_URL,
+        connect_args={"check_same_thread": False},
+        echo=True,
+    )
+
+    # ✅ sessionmaker assíncrono
+    session_factory = providers.Singleton(
+        async_sessionmaker,
+        bind=engine,
+        expire_on_commit=False,
+        class_=AsyncSession,
+    )
+
+    # ✅ Resource assíncrono (yield para injetar corretamente)
+    session = providers.Resource(
+        lambda session_factory: session_factory(),
+        session_factory,
+    )
 
     logger = providers.Singleton(
         Logger,
@@ -44,9 +61,7 @@ class Container(containers.DeclarativeContainer):
     )
 
     todo_client = TodoApiClient("https://jsonplaceholder.typicode.com")
-
     todo_service = providers.Factory(TodoService, todo_client, logger=logger)
 
     movies_client = MoviesApiClient("https://api.themoviedb.org/3")
-
     movie_service = providers.Factory(MovieService, movies_client, logger=logger)

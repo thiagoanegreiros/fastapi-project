@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi import FastAPI
@@ -16,7 +16,12 @@ from core.logger.logger_middleware import RequestLoggingMiddleware
 def client_and_service():
     container = Container()
 
+    # ✅ Mocks assíncronos
     mock_service = MagicMock()
+    mock_service.find_all = AsyncMock()
+    mock_service.get = AsyncMock()
+    mock_service.popular = AsyncMock()
+
     mock_logger = MagicMock(spec=Logger)
 
     container.movie_service.override(mock_service)
@@ -59,7 +64,7 @@ def test_list_movies(client_and_service):
     response = client.get("/movies/search/matrix")
     assert response.status_code == 200
     assert response.json() == [movie1.model_dump(), movie2.model_dump()]
-    mock_service.find_all.assert_called_once_with(query="matrix")
+    mock_service.find_all.assert_awaited_once_with(query="matrix")
 
 
 def test_popular_movies(client_and_service):
@@ -77,7 +82,7 @@ def test_popular_movies(client_and_service):
     response = client.get("/movies/popular")
     assert response.status_code == 200
     assert response.json() == [movie.model_dump()]
-    mock_service.popular.assert_called_once()
+    mock_service.popular.assert_awaited_once()
 
 
 def test_get_movie_found(client_and_service):
@@ -95,7 +100,7 @@ def test_get_movie_found(client_and_service):
     response = client.get("/movies/1")
     assert response.status_code == 200
     assert response.json() == movie.model_dump()
-    mock_service.get.assert_called_once_with(1)
+    mock_service.get.assert_awaited_once_with(1)
 
 
 def test_get_movie_not_found(client_and_service):
@@ -105,4 +110,4 @@ def test_get_movie_not_found(client_and_service):
     response = client.get("/movies/999")
     assert response.status_code == 404
     assert response.json()["detail"] == "Movie Not Found"
-    mock_service.get.assert_called_once_with(999)
+    mock_service.get.assert_awaited_once_with(999)

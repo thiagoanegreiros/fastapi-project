@@ -1,5 +1,5 @@
 import os
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi import FastAPI
@@ -18,7 +18,13 @@ from core.logger.logger_middleware import RequestLoggingMiddleware
 def client_and_repo():
     container = Container()
 
+    # ✅ Mock assíncrono
     mock_repo = MagicMock()
+    mock_repo.save = AsyncMock()
+    mock_repo.get = AsyncMock()
+    mock_repo.find_all = AsyncMock()
+    mock_repo.delete = AsyncMock()
+
     mock_logger = MagicMock(spec=Logger)
 
     container.user_repository.override(mock_repo)
@@ -51,7 +57,7 @@ def test_create_user(client_and_repo):
 
     assert response.status_code == 200
     assert response.json() == user_output.model_dump()
-    mock_repo.save.assert_called_once()
+    mock_repo.save.assert_awaited_once()
 
 
 def test_list_users(client_and_repo):
@@ -63,7 +69,7 @@ def test_list_users(client_and_repo):
     response = client.get("/users/")
     assert response.status_code == 200
     assert response.json() == [user1.model_dump(), user2.model_dump()]
-    mock_repo.find_all.assert_called_once()
+    mock_repo.find_all.assert_awaited_once()
 
 
 def test_get_user_found(client_and_repo):
@@ -74,7 +80,7 @@ def test_get_user_found(client_and_repo):
     response = client.get("/users/1")
     assert response.status_code == 200
     assert response.json() == user.model_dump()
-    mock_repo.get.assert_called_once_with("1")
+    mock_repo.get.assert_awaited_once_with("1")
 
 
 def test_get_user_not_found(client_and_repo):
@@ -84,7 +90,7 @@ def test_get_user_not_found(client_and_repo):
     response = client.get("/users/999")
     assert response.status_code == 404
     assert response.json()["detail"] == "Usuário não encontrado"
-    mock_repo.get.assert_called_once_with("999")
+    mock_repo.get.assert_awaited_once_with("999")
 
 
 def test_delete_user_success(client_and_repo):
@@ -93,7 +99,7 @@ def test_delete_user_success(client_and_repo):
 
     response = client.delete("/users/123")
     assert response.status_code == 200
-    mock_repo.delete.assert_called_once_with("123")
+    mock_repo.delete.assert_awaited_once_with("123")
 
 
 def test_delete_user_not_found(client_and_repo):
@@ -103,4 +109,4 @@ def test_delete_user_not_found(client_and_repo):
     response = client.delete("/users/999")
     assert response.status_code == 404
     assert response.json()["detail"] == "Usuário não encontrado"
-    mock_repo.delete.assert_called_once_with("999")
+    mock_repo.delete.assert_awaited_once_with("999")

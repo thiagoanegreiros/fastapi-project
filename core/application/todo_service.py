@@ -14,8 +14,8 @@ class TodoService:
         self.gateway = gateway
         self.logger = logger
 
-    def find_all(self) -> List[ToDo]:
-        return self.gateway.find_all()
+    async def find_all(self) -> List[ToDo]:
+        return await self.gateway.find_all()
 
-    def get(self, id: str) -> Optional[ToDo]:
-        return self.gateway.get(id)
+    async def get(self, id: str) -> Optional[ToDo]:
+        return await self.gateway.get(id)

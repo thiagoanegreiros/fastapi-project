@@ -14,11 +14,11 @@ class MovieService:
         self.gateway = gateway
         self.logger = logger
 
-    def find_all(self, query: str) -> List[Movie]:
-        return self.gateway.find_all(query)
+    async def find_all(self, query: str) -> List[Movie]:
+        return await self.gateway.find_all(query)
 
-    def popular(self) -> List[Movie]:
-        return self.gateway.popular()
+    async def popular(self) -> List[Movie]:
+        return await self.gateway.popular()
 
-    def get(self, id: str) -> Optional[Movie]:
-        return self.gateway.get(id)
+    async def get(self, id: str) -> Optional[Movie]:
+        return await self.gateway.get(id)

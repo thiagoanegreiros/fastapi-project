@@ -32,6 +32,7 @@ GraphQL is running on https://python-studies.onrender.com/graphql
 - ✅ GraphQL API integration using Strawberry
 - ✅ ⚡ This project uses uv for environment and package management. It is fully compatible with pip and extremely fast.
 - ✅ Environment configuration with .env using a custom PyPI package: ta-envy
+- ✅ All external API calls and database operations are now fully **asynchronous (async/await)** for maximum I/O performance
 
 ---
 
