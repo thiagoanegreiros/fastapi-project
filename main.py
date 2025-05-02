@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 from datetime import timedelta
 from urllib.parse import parse_qs, urlencode
 
@@ -36,7 +37,18 @@ env = Env(
     ]
 )
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    if not os.path.exists("db.sqlite3"):
+        logger.info("📦 Creating database and tables...")
+        async with container.engine().begin() as conn:
+            await conn.run_sync(SQLModel.metadata.create_all)
+        logger.info("✅ Database created successfully!")
+    else:
+        logger.info("📁 Database already exists. No need to create.")
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 container = Container()
 container.init_resources()
@@ -58,14 +70,6 @@ container.wire(modules=["core.logger.exception_handlers"])
 app.container = container
 
 logger = container.logger()
-
-if not os.path.exists("db.sqlite3"):
-    logger.info("📦 Criando banco de dados e tabelas...")
-    SQLModel.metadata.create_all(container.engine())
-    logger.info("✅ Banco criado com sucesso!")
-else:
-    logger.info("📁 Banco já existe, sem necessidade de criar.")
-
 
 # Static Route
 app.mount("/static", StaticFiles(directory="static"), name="static")
