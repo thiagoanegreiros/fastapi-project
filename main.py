@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -46,6 +47,14 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://user-management-app-hwjb.onrender.com"],  # origem permitida
+    allow_credentials=True,
+    allow_methods=["*"],  # ou especifique ["GET", "POST", ...]
+    allow_headers=["*"],
+)
 
 container = Container()
 container.init_resources()
