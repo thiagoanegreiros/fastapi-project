@@ -16,7 +16,9 @@ jobs:
       JWT_SECRET_KEY: ${{ vars.JWT_SECRET_KEY }}
       FRONT_REDIRECT_URI: ${{ vars.FRONT_REDIRECT_URI }}
       MOVIE_API_KEY: ${{ vars.MOVIE_API_KEY }}
-    
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_ID }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
