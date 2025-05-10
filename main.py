@@ -1,14 +1,10 @@
 import os
 from contextlib import asynccontextmanager
-from datetime import timedelta
-from urllib.parse import parse_qs, urlencode
 
-from authlib.integrations.starlette_client import OAuth
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.utils import get_openapi
-from fastapi.requests import Request
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import SQLModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -17,8 +13,7 @@ from strawberry.fastapi import GraphQLRouter
 from ta_envy import Env
 
 from api.graphql.schema import schema
-from api.routes import movies_router, todo_router, user_router
-from core.auth import create_access_token, verify_access_token
+from api.routes import login_router, movies_router, todo_router, user_router
 from core.container import Container
 from core.logger.exception_handlers import (
     global_exception_handler,
@@ -37,6 +32,7 @@ env = Env(
     ]
 )
 
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     if not os.path.exists("db.sqlite3"):
@@ -47,6 +43,7 @@ async def lifespan(_: FastAPI):
     else:
         logger.info("📁 Database already exists. No need to create.")
     yield
+
 
 app = FastAPI(lifespan=lifespan)
 
@@ -104,6 +101,7 @@ def custom_openapi():
 
 
 app.openapi = custom_openapi
+app.include_router(login_router.router)
 
 
 # GraphQL Route
@@ -121,15 +119,6 @@ app.include_router(graphql_app, prefix="/graphql")
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 
-oauth = OAuth()
-oauth.register(
-    name="google",
-    client_id=env.get("GOOGLE_CLIENT_ID", type=str),
-    client_secret=env.get("GOOGLE_CLIENT_SECRET", type=str),
-    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
-    client_kwargs={"scope": "openid email profile"},
-)
-
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
@@ -139,35 +128,3 @@ async def favicon():
 @app.get("/")
 def read_root():
     return {"message": "Hexagonal Architecture API! "}
-
-
-@app.get("/login")
-async def login(request: Request):
-    redirect_uri = env.get("REDIRECT_URI")
-    frontend_redirect_uri = request.query_params.get("redirect_uri")
-
-    state = urlencode({"redirect_uri": frontend_redirect_uri})
-    return await oauth.google.authorize_redirect(request, redirect_uri, state=state)
-
-
-@app.get("/auth")
-async def auth(request: Request):
-    token = await oauth.google.authorize_access_token(request)
-    user_info = token["userinfo"]
-
-    state_raw = request.query_params.get("state", "")
-    state_data = parse_qs(state_raw)
-    redirect_uri = state_data.get("redirect_uri", [env.get("FRONT_REDIRECT_URI")])[0]
-
-    access_token = create_access_token(
-        data={"sub": user_info["email"]}, expires_delta=timedelta(minutes=60)
-    )
-
-    return RedirectResponse(url=f"{redirect_uri}?token={access_token}")
-
-
-@app.get("/me")
-async def me(request: Request):
-    token = request.query_params.get("token")
-    payload = verify_access_token(token)
-    return payload
