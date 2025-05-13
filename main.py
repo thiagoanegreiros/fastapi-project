@@ -55,9 +55,12 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://user-management-app-hwjb.onrender.com"],  # origem permitida
+    allow_origins=[
+        "http://localhost:3000",
+        "https://user-management-app-hwjb.onrender.com"
+    ],
     allow_credentials=True,
-    allow_methods=["*"],  # ou especifique ["GET", "POST", ...]
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
