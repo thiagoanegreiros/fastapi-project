@@ -13,15 +13,20 @@ from starlette.middleware.sessions import SessionMiddleware
 from strawberry.fastapi import GraphQLRouter
 from ta_envy import Env
 
-from api.graphql.schema import schema
-from api.routes import login_router, movies_router, todo_router, user_router
-from core.container import Container
-from core.logger.exception_handlers import (
+from adapters.inbound.graphql.schema import schema
+from adapters.inbound.routes import (
+    login_router,
+    movies_router,
+    todo_router,
+    user_router,
+)
+from infrastructure.container import Container
+from infrastructure.logger.exception_handlers import (
     global_exception_handler,
     http_exception_handler,
     validation_exception_handler,
 )
-from core.logger.logger_middleware import RequestLoggingMiddleware
+from infrastructure.logger.logger_middleware import RequestLoggingMiddleware
 
 env = Env(
     required=[
@@ -68,10 +73,25 @@ container.config.logging.level.from_env("LOG_LEVEL", "INFO")
 container.config.logging.to_console.from_env("LOG_TO_CONSOLE", True)
 container.config.logging.rotation_days.from_env("ROTATION_DAYS", 5)
 container.config.logging.file.from_env("LOG_FILE", "logs/app.log")
-container.wire(modules=["core.logger.logger_middleware", "api.routes.user_router"])
-container.wire(modules=["core.logger.logger_middleware", "api.routes.todo_router"])
-container.wire(modules=["core.logger.logger_middleware", "api.routes.movies_router"])
-container.wire(modules=["core.logger.exception_handlers"])
+container.wire(
+    modules=[
+        "infrastructure.logger.logger_middleware",
+        "adapters.inbound.routes.user_router",
+    ]
+)
+container.wire(
+    modules=[
+        "infrastructure.logger.logger_middleware",
+        "adapters.inbound.routes.todo_router",
+    ]
+)
+container.wire(
+    modules=[
+        "infrastructure.logger.logger_middleware",
+        "adapters.inbound.routes.movies_router",
+    ]
+)
+container.wire(modules=["infrastructure.logger.exception_handlers"])
 
 app.container = container
 

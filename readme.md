@@ -39,49 +39,56 @@ GraphQL is running on https://python-studies.onrender.com/graphql
 ## 🧱 Project Structure
 
 ```
-project-root/
-├── .vscode/                      # VS Code editor settings (optional)
+fastapi-project/
+├── adapters/                            # Adapters (entry and exit points)
+│   ├── inbound/                         # Inbound adapters (e.g., HTTP, GraphQL)
+│   │   ├── auth.py                      # Authentication logic (e.g., OAuth2)
+│   │   ├── graphql/                     # GraphQL schema and resolvers
+│   │   └── routes/                      # REST route handlers
+│   │       ├── login_router.py
+│   │       ├── movies_router.py
+│   │       └── todo_router.py
+│   │
+│   └── out/                             # Outbound adapters (infrastructure implementations)
+│       ├── api/                         # External API clients
+│       │   ├── movies_api_client.py
+│       │   └── todo_api_client.py
+│       └── database/                    # Database persistence layer
+│           ├── base_repository.py
+│           ├── models.py
+│           └── user_repository.py
 │
-├── api/                          # HTTP interface layer (FastAPI)
-│   ├── graphql/                  # GraphQL (Strawberry)
-│   │   └── resolvers.py          # GraphQL resolvers
-│   │   └── schema.py             # GraphQL schema definition
-│   └── routes/                   # Route definitions organized by domain context (e.g., todo, user)
-│       ├── todo_router.py
-│       └── user_router.py
+├── application/                         # Application layer (use cases / services)
+│   ├── movie_service.py
+│   ├── todo_service.py
+│   └── user_service.py
 │
-├── core/                         # Application core following Hexagonal Architecture
-│   ├── application/              # Use cases (application services)
-│   ├── domain/                   # Business entities, value objects, and abstract interfaces
-│   ├── logger/                   # Structured logging with middleware and request context
-│   │   ├── exception_handlers.py # Centralized exception management
-│   │   ├── logger.py             # Logger setup
-│   │   ├── logger_middleware.py  # Middleware for logging and request timing
-│   │   └── request_context.py    # Per-request scoped context (e.g., request_id)
-│   ├── auth.py                   # Authentication logic (Google OAuth2, etc.)
-│   └── container.py              # Dependency injection container using `dependency-injector`
+├── domain/                              # Domain layer (entities and ports/interfaces)
+│   ├── movie.py
+│   ├── todo.py
+│   ├── user.py
+│   ├── movie_api_client_interface.py
+│   ├── todo_api_client_interface.py
+│   └── user_repository_interface.py
 │
-├── infrastructure/              # External systems and adapter implementations
-│   ├── api/                      # External API clients (e.g., REST clients)
-│   │   └── todo_api_client.py
-│   └── database/                 # Persistent repositories and models using SQLModel
-│       ├── base_repository.py    # Generic base repository with common CRUD logic
-│       ├── models.py             # ORM models mapped to the domain
-│       └── user_repository.py    # User-specific repository implementation
+├── infrastructure/                      # Technical infrastructure (cross-cutting concerns)
+│   ├── logger/                          # Logging and exception handling
+│   │   ├── exception_handlers.py        # Global exception handlers
+│   │   ├── logger.py                    # Logger configuration
+│   │   ├── logger_middleware.py         # Request timing / structured logs
+│   │   └── request_context.py           # Request-scoped context (e.g., request_id)
+│   └── container.py                     # Dependency injection configuration
 │
-├── logs/                         # Log output files (runtime logs, if enabled)
-├── scripts/                      # Utility scripts (e.g., manual testing, data generation)
-├── static/                       # Static assets (optional, if needed)
-├── tests/                        # Unit tests organized by layer (100% coverage with mocks)
+├── logs/                                # Application log files
+├── scripts/                             # Utility scripts (e.g., seeding, testing)
+├── static/                              # Static assets (optional)
+├── tests/                               # Automated tests (organized per layer)
+│   └── adapters/inbound/routes/         # Route handler tests
 │
-├── .env                          # Optional local environment file (loaded via `ta-envy` from PyPI)
-├── pyproject.toml                # Project configuration (dependencies, linting, formatting, etc.)
-├── README.md                     # Project documentation and usage instructions
-└── pre-commit-config.yaml        # Pre-commit hooks (e.g., `ruff`, `black`, `isort`, `coverage`)
+├── .env                                 # Environment variables for local/dev use
+├── pyproject.toml                       # Project configuration (dependencies, formatting, linting)
+└── README.md                            # Project documentation and onboarding
 ```
-
-> All requests go through the API → Application → Infrastructure. Domain layer does not depend on external details.
-
 ---
 
 ## 🧪 Running Tests
