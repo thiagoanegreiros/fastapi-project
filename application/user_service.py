@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from domain.user import User
 from domain.user_repository_interface import IUserRepository
@@ -31,3 +31,6 @@ class UserService:
     async def get(self, id: str) -> Optional[User]:
         self.logger.debug(f"Buscando usuário com ID: {id}")
         return await self.user_repository.get(id)
+
+    async def update(self, user_id: str, user_data: dict[str, Any]) -> User | None:
+        return await self.user_repository.update(user_id, user_data)

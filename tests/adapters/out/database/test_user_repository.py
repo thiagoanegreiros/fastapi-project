@@ -15,7 +15,8 @@ def mock_session():
     session.commit = AsyncMock()
     session.refresh = AsyncMock()
     session.delete = AsyncMock()
-    session.add = MagicMock()  # ⚠️ importante: .add() não é async
+    session.update = AsyncMock()
+    session.add = MagicMock()
     return session
 
 
@@ -54,7 +55,6 @@ async def test_find_all_users(user_repository, mock_session):
         UserDB(id="2", name="Bob", email="bob@example.com"),
     ]
 
-    # Corrigido: .all é síncrono, use MagicMock
     mock_scalars = MagicMock()
     mock_scalars.all.return_value = fake_users_db  # ✅
 
@@ -107,3 +107,18 @@ async def test_delete_user_not_found(user_repository, mock_session):
     assert result is False
     mock_session.delete.assert_not_called()
     mock_session.commit.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_update_user(user_repository, mock_session):
+    user_id = "1"
+    fake_user_db = UserDB(id=user_id, name="ToUpdate", email="del@example.com")
+    mock_session.get.return_value = fake_user_db
+
+    data = {"id": "1", "name": "UpdatedName", "email": "updated@example.com"}
+
+    result = await user_repository.update(user_id, data)
+
+    assert result == UserDB(id=user_id, name="UpdatedName", email="updated@example.com")
+    mock_session.get.assert_awaited_once_with(UserDB, user_id)
+    mock_session.commit.assert_awaited_once()

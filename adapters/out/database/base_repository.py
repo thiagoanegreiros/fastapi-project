@@ -1,4 +1,4 @@
-from typing import Generic, List, Type, TypeVar
+from typing import Any, Generic, List, Type, TypeVar
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import SQLModel, select
@@ -26,9 +26,23 @@ class BaseRepository(Generic[T]):
         return entity
 
     async def delete(self, id: str) -> bool:
-        obj = await self.get(id)
+        obj = await self.session.get(self.model, id)
         if obj:
             await self.session.delete(obj)
             await self.session.commit()
             return True
         return False
+
+    async def update(self, id: str, data: dict[str, Any]) -> T:
+        obj = await self.session.get(self.model, id)
+
+        for key, value in data.items():
+            if key == "id":
+                continue
+            if hasattr(obj, key):
+                setattr(obj, key, value)
+
+        self.session.add(obj)
+        await self.session.commit()
+        await self.session.refresh(obj)
+        return obj

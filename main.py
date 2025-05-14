@@ -57,7 +57,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://user-management-app-hwjb.onrender.com"
+        "https://user-management-app-hwjb.onrender.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],

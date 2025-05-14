@@ -38,6 +38,7 @@ async def delete_user(
 ):
     if await service.delete(user_id) is False:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    return True
 
 
 @router.get("/{user_id}", dependencies=[Depends(require_auth)])
@@ -49,3 +50,16 @@ async def get_user(
     if user is None:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     return user
+
+
+@router.put("/{user_id}", dependencies=[Depends(require_auth)])
+@inject
+async def update_user(
+    user_id: str,
+    user: User,
+    service: UserService = Depends(Provide[Container.user_service]),
+):
+    updated = await service.update(user_id, user.model_dump(exclude_unset=True))
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    return updated

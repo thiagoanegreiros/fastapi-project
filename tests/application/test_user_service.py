@@ -13,6 +13,7 @@ def mock_repo():
     repo.find_all = AsyncMock()
     repo.delete = AsyncMock()
     repo.get = AsyncMock()
+    repo.update = AsyncMock()
     return repo
 
 
@@ -70,3 +71,14 @@ async def test_get_user(user_service, mock_repo):
 
     mock_repo.get.assert_awaited_once_with("id_02")
     assert result == user
+
+
+@pytest.mark.asyncio
+async def test_update_user(user_service, mock_repo):
+    mock_repo.update.return_value = True
+    user = User(id="id_01", name="Test User", email="test@example.com")
+
+    result = await user_service.update("id_01", user)
+
+    mock_repo.update.assert_awaited_once_with("id_01", user)
+    assert result is True

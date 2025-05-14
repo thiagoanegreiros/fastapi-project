@@ -10,7 +10,7 @@ addopts = "--cov --cov-report=term-missing"
 testpaths = ["tests"]
 
 [tool.coverage.run]
-source = ["api", "core", "infrastructure"]
+source = ["domain", "application", "adapters", "infrastructure"]
 
 [tool.coverage.report]
 show_missing = true

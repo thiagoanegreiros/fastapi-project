@@ -115,3 +115,32 @@ def test_delete_user_not_found(client_and_repo):
     assert response.status_code == 404
     assert response.json()["detail"] == "Usuário não encontrado"
     mock_repo.delete.assert_awaited_once_with("999")
+
+
+def test_update_user_success(client_and_repo):
+    client, mock_repo = client_and_repo
+    user_id = "123"
+    user_input = {"name": "Updated Name", "email": "updated@example.com"}
+    updated_user = User(id=user_id, name="Updated Name", email="updated@example.com")
+
+    mock_repo.update = AsyncMock(return_value=updated_user)
+
+    response = client.put(f"/users/{user_id}", json=user_input)
+
+    assert response.status_code == 200
+    assert response.json() == updated_user.model_dump()
+    mock_repo.update.assert_awaited_once_with(user_id, user_input)
+
+
+def test_update_user_not_found(client_and_repo):
+    client, mock_repo = client_and_repo
+    user_id = "999"
+    user_input = {"name": "Not Found", "email": "notfound@example.com"}
+
+    mock_repo.update = AsyncMock(return_value=None)
+
+    response = client.put(f"/users/{user_id}", json=user_input)
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Usuário não encontrado"
+    mock_repo.update.assert_awaited_once_with(user_id, user_input)

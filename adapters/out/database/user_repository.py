@@ -1,6 +1,4 @@
-# infrastructure/database/user_repository.py
-
-from typing import List
+from typing import Any, List, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -29,3 +27,6 @@ class UserRepository(BaseRepository[UserDB], IUserRepository):
 
     async def delete(self, id: str) -> bool:
         return await super().delete(id)
+
+    async def update(self, id: str, data: dict[str, Any]) -> Optional[User]:
+        return await super().update(id, data)
