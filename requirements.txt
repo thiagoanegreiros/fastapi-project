@@ -31,7 +31,7 @@ iniconfig==2.1.0
 itsdangerous==2.2.0
 jiter==0.9.0
 nodeenv==1.9.1
-packaging==24.2
+packaging==25.0
 platformdirs==4.3.7
 pluggy==1.5.0
 pre-commit==4.2.0
