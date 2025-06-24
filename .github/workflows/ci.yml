@@ -52,7 +52,8 @@ jobs:
       - name: Download OWASP Dependency-Check
         run: |
           curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v12.1.0/dependency-check-12.1.0-release.zip
-          unzip dependency-check.zip -d dependency-check
+          unzip dependency-check.zip
+          mv dependency-check-12.1.0 dependency-check
 
       - name: Run OWASP Dependency-Check
         run: |
@@ -63,7 +64,6 @@ jobs:
             --format "HTML" \
             --failOnCVSS 7.0 \
             --out dependency-check-report
-
 
       - name: Upload Dependency-Check Report
         uses: actions/upload-artifact@v4
