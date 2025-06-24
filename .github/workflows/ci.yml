@@ -55,6 +55,8 @@ jobs:
           unzip dependency-check.zip
 
       - name: Run OWASP Dependency-Check
+        env:
+            NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
           chmod +x dependency-check/bin/dependency-check.sh
           ./dependency-check/bin/dependency-check.sh \
@@ -62,7 +64,8 @@ jobs:
             --scan . \
             --format "HTML" \
             --failOnCVSS 7.0 \
-            --out dependency-check-report
+            --out dependency-check-report \
+            --nvdApiKey "$NVD_API_KEY"
 
       - name: Upload Dependency-Check Report
         uses: actions/upload-artifact@v4
