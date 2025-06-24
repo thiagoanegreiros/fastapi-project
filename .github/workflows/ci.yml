@@ -49,9 +49,9 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Download OWASP Dependency-Check
+      - name: Download OWASP Dependency-Check v11.0.5
         run: |
-          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v12.1.0/dependency-check-12.1.0-release.zip
+          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v11.0.5/dependency-check-11.0.5-release.zip
           unzip dependency-check.zip
 
       - name: Run OWASP Dependency-Check
