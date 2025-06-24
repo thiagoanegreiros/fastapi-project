@@ -56,12 +56,14 @@ jobs:
 
       - name: Run OWASP Dependency-Check
         run: |
-          ./dependency-check/bin/dependency-check.sh \
+          chmod +x dependency-check/bin/dependency-check
+          ./dependency-check/bin/dependency-check \
             --project "Python App Audit" \
             --scan . \
             --format "HTML" \
             --failOnCVSS 7.0 \
             --out dependency-check-report
+
 
       - name: Upload Dependency-Check Report
         uses: actions/upload-artifact@v4
