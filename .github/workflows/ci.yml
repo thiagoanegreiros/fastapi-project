@@ -56,8 +56,8 @@ jobs:
 
       - name: Run OWASP Dependency-Check
         run: |
-          chmod +x dependency-check/bin/dependency-check
-          ./dependency-check/bin/dependency-check \
+          chmod +x dependency-check/bin/dependency-check.sh
+          ./dependency-check/bin/dependency-check.sh \
             --project "Python App Audit" \
             --scan . \
             --format "HTML" \
