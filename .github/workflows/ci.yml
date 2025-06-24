@@ -8,6 +8,7 @@ on:
 
 env:
   PYTHONPATH: ${{ github.workspace }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -17,7 +18,7 @@ jobs:
       FRONT_REDIRECT_URI: ${{ vars.FRONT_REDIRECT_URI }}
       MOVIE_API_KEY: ${{ vars.MOVIE_API_KEY }}
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       REDIRECT_URI: ${{ vars.REDIRECT_URI }}
 
     steps:
@@ -35,17 +36,35 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Sync dependencies with uv
-        run: |
-          uv sync
+        run: uv sync
 
       - name: Run pre-push checks
         run: ./scripts/pre_push_check.sh
 
       - name: Run tests with coverage
-        run: |
-          uv run pytest --cov --cov-report=xml
+        run: uv run pytest --cov --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Download OWASP Dependency-Check
+        run: |
+          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/latest/download/dependency-check.zip
+          unzip dependency-check.zip -d dependency-check
+
+      - name: Run OWASP Dependency-Check
+        run: |
+          ./dependency-check/bin/dependency-check.sh \
+            --project "Python App Audit" \
+            --scan . \
+            --format "HTML" \
+            --failOnCVSS 7.0 \
+            --out dependency-check-report
+
+      - name: Upload Dependency-Check Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: dependency-check-report
