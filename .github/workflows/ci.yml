@@ -64,3 +64,24 @@ jobs:
         with:
           name: trivy-report
           path: trivy-report.txt
+
+      - name: Start FastAPI app
+        run: |
+          uv run uvicorn main:app --host 0.0.0.0 --port 8000 &
+          sleep 10  # Espera o servidor subir
+
+      - name: Run ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'http://localhost:8000'
+          fail_action: true
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload ZAP Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: report_html.html
