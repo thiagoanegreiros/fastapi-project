@@ -87,3 +87,23 @@ jobs:
         with:
           name: zap-report
           path: report_html.html
+
+      - name: Build Docker image
+        run: |
+          docker build -t myapp:latest .
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: image
+          image-ref: myapp:latest
+          severity: CRITICAL,HIGH
+          format: table
+          exit-code: 1
+
+      - name: Upload Trivy Image Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-image-report
+          path: trivy-report.txt
