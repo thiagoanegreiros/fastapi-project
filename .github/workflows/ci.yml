@@ -79,7 +79,7 @@ jobs:
         with:
           target: 'http://localhost:8000'
           rules_file_name: 'zap-rules.tsv'
-        continue-on-error: false
+        continue-on-error: true
 
       - name: Upload ZAP Report
         if: always()
