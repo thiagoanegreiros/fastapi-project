@@ -80,8 +80,6 @@ jobs:
           target: 'http://localhost:8000'
           rules_file_name: 'zap-rules.tsv'
         continue-on-error: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload ZAP Report
         if: always()
