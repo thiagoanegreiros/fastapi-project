@@ -3,8 +3,9 @@ FROM python:3.12.2-slim
 # Instala curl e utilitários para baixar o uv
 RUN apt-get update && apt-get install -y curl && apt-get clean
 
-# Instala o uv (binário)
-RUN curl -Ls https://astral.sh/uv/install.sh | bash
+# Instala o uv (binário) e adiciona ao PATH
+RUN curl -Ls https://astral.sh/uv/install.sh | bash && \
+    ln -s /root/.cargo/bin/uv /usr/local/bin/uv
 
 # Cria o diretório de trabalho
 WORKDIR /app
@@ -13,8 +14,8 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 
 # Instala as dependências com uv
-RUN ~/.cargo/bin/uv venv --python=/usr/local/bin/python && \
-    ~/.cargo/bin/uv pip sync
+RUN uv venv --python=/usr/local/bin/python && \
+    uv pip sync
 
 # Copia o restante do código
 COPY . .
