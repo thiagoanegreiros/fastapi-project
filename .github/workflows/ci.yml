@@ -74,8 +74,8 @@ jobs:
         uses: zaproxy/action-baseline@v0.10.0
         with:
           target: 'http://localhost:8000'
-          fail_action: true
-        continue-on-error: true
+          cmd_options: '-l HIGH'
+        continue-on-error: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
