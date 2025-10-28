@@ -49,7 +49,7 @@ six==1.17.0
 sniffio==1.3.1
 sqlalchemy==2.0.41
 sqlmodel==0.0.24
-starlette==0.46.2
+starlette==0.49.1
 strawberry-graphql==0.275.2
 ta-envy==0.1.2
 typing-extensions==4.14.0
