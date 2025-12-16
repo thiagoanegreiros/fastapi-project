@@ -13,7 +13,7 @@ dependency-injector==4.48.1
 distlib==0.3.9
 ecdsa==0.19.1
 fastapi==0.115.13
-filelock==3.18.0
+filelock==3.20.1
 graphql-core==3.2.6
 greenlet==3.2.3
 h11==0.16.0
